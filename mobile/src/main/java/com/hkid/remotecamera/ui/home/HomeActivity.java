@@ -3,6 +3,7 @@ package com.hkid.remotecamera.ui.home;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -13,7 +14,10 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.Image;
+import android.media.ImageReader;
 import android.os.Bundle;
+import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -26,14 +30,16 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.hkid.remotecamera.R;
+import com.hkid.remotecamera.util.CompareSizesByArea;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class HomeActivity extends FragmentActivity implements HomePresenter.View, TextureView.SurfaceTextureListener{
+public class HomeActivity extends FragmentActivity implements HomePresenter.View, TextureView.SurfaceTextureListener, ImageReader.OnImageAvailableListener {
 
 
     Unbinder unbinder;
@@ -49,6 +55,13 @@ public class HomeActivity extends FragmentActivity implements HomePresenter.View
     private CaptureRequest captureRequest;
     private CaptureRequest.Builder captureRequestBuilder;
     private CameraCaptureSession cameraCaptureSession;
+    private ImageReader mImageReader;
+    private Surface previewSurface;
+    /**
+     * An additional thread for running tasks that shouldn't block the UI.
+     */
+    private HandlerThread mBackgroundThread;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,8 +105,22 @@ public class HomeActivity extends FragmentActivity implements HomePresenter.View
             assert map != null;
             imageDimension = map.getOutputSizes(SurfaceTexture.class)[0];
 
+
+            // For still image captures, we use the largest available size.
+            Size largest = Collections.max(
+                    Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
+                    new CompareSizesByArea());
+
+            int width = largest.getWidth();
+            int height = largest.getHeight();
+//            width = 320;
+//            height = 420;
+            mImageReader = ImageReader.newInstance(width, height,
+                    ImageFormat.YUV_420_888, /*maxImages*/2);
+            mImageReader.setOnImageAvailableListener(this, null);
+
             // Add permission for camera and let user grant the permission
-            if(ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CAMERA_PERMISSION);
                 return;
             }
@@ -105,28 +132,36 @@ public class HomeActivity extends FragmentActivity implements HomePresenter.View
 
     @Override
     public void closeCamera() {
-        if(null != cameraDevice){
+        if (null != cameraDevice) {
             cameraDevice.close();
             cameraDevice = null;
+        }
+
+        if (null != mImageReader) {
+            mImageReader.close();
+            mImageReader = null;
         }
 
     }
 
     @Override
     public void createCameraPreview() {
+        Log.d("HomeActivity", "createCameraPreview");
         SurfaceTexture surfaceTexture = texture.getSurfaceTexture();
         assert texture != null;
         surfaceTexture.setDefaultBufferSize(imageDimension.getWidth(), imageDimension.getHeight());
 
-        Surface surface = new Surface(surfaceTexture);
+        previewSurface = new Surface(surfaceTexture);
         try {
             captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            captureRequestBuilder.addTarget(surface);
-            cameraDevice.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback() {
+            captureRequestBuilder.addTarget(previewSurface);
+            captureRequestBuilder.addTarget(mImageReader.getSurface());
+            cameraDevice.createCaptureSession(Arrays.asList(previewSurface, mImageReader.getSurface()), new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(CameraCaptureSession cameraCaptureSession) {
+                    Log.d("HomeActivity", "onConfigured");
                     // The camera is already closed
-                    if(null == cameraDevice){
+                    if (null == cameraDevice) {
                         return;
                     }
 
@@ -137,7 +172,7 @@ public class HomeActivity extends FragmentActivity implements HomePresenter.View
 
                 @Override
                 public void onConfigureFailed(CameraCaptureSession cameraCaptureSession) {
-
+                    Log.e("HomeActivity", "onConfigureFailed");
                 }
             }, null);
         } catch (CameraAccessException e) {
@@ -147,16 +182,33 @@ public class HomeActivity extends FragmentActivity implements HomePresenter.View
 
     @Override
     public void updatePreview() {
-        if(null == cameraDevice){
+        if (null == cameraDevice) {
             Log.d("HomeActivity", "updatePreview error, return");
         }
-
         captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
         try {
             cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+
+//            // Auto focus should be continuous for camera preview. [...code...]
+//            captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+//                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+//            // Flash is automatically enabled when necessary.
+//            captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+//                    CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+//
+//            // Finally, we start displaying the camera preview.
+//            CaptureRequest mPreviewRequest = captureRequestBuilder.build();
+//            cameraCaptureSession.setRepeatingRequest(mPreviewRequest,
+//                    new CameraCaptureSession.CaptureCallback() {
+//                        @Override
+//                        public void onCaptureStarted(CameraCaptureSession session, CaptureRequest request, long timestamp, long frameNumber) {
+//                            super.onCaptureStarted(session, request, timestamp, frameNumber);
+//                        }
+//                    }, null);
         } catch (CameraAccessException e) {
             e.printStackTrace();
+
         }
     }
 
@@ -203,8 +255,8 @@ public class HomeActivity extends FragmentActivity implements HomePresenter.View
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == REQUEST_CAMERA_PERMISSION){
-            if(grantResults[0] == PackageManager.PERMISSION_DENIED){
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 Toast.makeText(this, "Sorry!!!, you can't use this app without granting permission", Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -212,14 +264,13 @@ public class HomeActivity extends FragmentActivity implements HomePresenter.View
     }
 
 
-
     @Override
     protected void onResume() {
         super.onResume();
 
-        if(texture.isAvailable()){
+        if (texture.isAvailable()) {
             openCamera();
-        }else {
+        } else {
             texture.setSurfaceTextureListener(this);
         }
     }
@@ -228,5 +279,16 @@ public class HomeActivity extends FragmentActivity implements HomePresenter.View
     protected void onPause() {
         super.onPause();
         closeCamera();
+    }
+
+    @Override
+    public void onImageAvailable(ImageReader imageReader) {
+        Log.d("HomeActivity", "onImageAvailable was called");
+        if(imageReader != null){
+            Image image = imageReader.acquireLatestImage();
+            if(image != null){
+                image.close();
+            }
+        }
     }
 }

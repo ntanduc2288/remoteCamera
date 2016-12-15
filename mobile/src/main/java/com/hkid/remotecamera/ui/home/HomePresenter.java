@@ -15,4 +15,8 @@ public interface HomePresenter {
         void createCameraPreview();
         void updatePreview();
     }
+
+    interface Presenter{
+
+    }
 }
