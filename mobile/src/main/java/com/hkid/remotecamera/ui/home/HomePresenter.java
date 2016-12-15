@@ -10,7 +10,8 @@ public interface HomePresenter {
         void keepScreenOn();
         void initSurfaceView();
         void clickOnSurfaceView();
-        void openCamera();
+        void clickOnTakePicture();
+        void openCamera(String cameraId);
         void closeCamera();
         void createCameraPreview();
         void updatePreview();
