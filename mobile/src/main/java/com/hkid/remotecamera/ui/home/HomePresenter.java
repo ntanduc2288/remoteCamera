@@ -7,14 +7,7 @@ package com.hkid.remotecamera.ui.home;
  */
 public interface HomePresenter {
     interface View{
-        void keepScreenOn();
-        void initSurfaceView();
-        void clickOnSurfaceView();
-        void clickOnTakePicture();
-        void openCamera(String cameraId);
-        void closeCamera();
-        void createCameraPreview();
-        void updatePreview();
+
     }
 
     interface Presenter{
