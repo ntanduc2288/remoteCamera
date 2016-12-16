@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hkid.remotecamera.ui.home;
+package com.hkid.remotecamera.presenter.home;
 
 import android.Manifest;
 import android.app.Activity;
@@ -84,6 +84,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -284,6 +285,15 @@ public class Camera2BasicFragment extends Fragment
                     sendToWearable("Result", baos.toByteArray(), null);
                     getActivity().runOnUiThread(() -> {
                         imgPreview.setImageBitmap(bmpSmallRotated);
+//                        cameraResult.setImageBitmap(bmpSmallRotated);
+//                        cameraResult.setX(0);
+//                        cameraResult.setRotation(0);
+//                        cameraResult.setVisibility(View.VISIBLE);
+//                        cameraResult.animate().setDuration(500).translationX(cameraResult.getWidth()).rotation(40).withEndAction(new Runnable() {
+//                            public void run() {
+//                                cameraResult.setVisibility(View.GONE);
+//                            }
+//                        });
                     });
 
 
@@ -294,6 +304,7 @@ public class Camera2BasicFragment extends Fragment
         }
 
     };
+    private ImageView cameraResult;
 
     private void sendToWearable(String path, byte[] data, ResultCallback<MessageApi.SendMessageResult> callback){
         if(mNode != null){
@@ -492,7 +503,7 @@ public class Camera2BasicFragment extends Fragment
         view.findViewById(R.id.info).setOnClickListener(this);
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
         imgPreview = (ImageView) view.findViewById(R.id.imgPreview);
-
+        cameraResult = (ImageView)view.findViewById(R.id.camera_result);
         initGoogleApiClient();
     }
 
@@ -547,7 +558,13 @@ public class Camera2BasicFragment extends Fragment
     private MessageApi.MessageListener messageListener = new MessageApi.MessageListener() {
         @Override
         public void onMessageReceived(MessageEvent messageEvent) {
-
+            Log.d(TAG, "onMessageReceived");
+            Scanner s = new Scanner(messageEvent.getPath());
+            String command = s.next();
+            if(command.equalsIgnoreCase("close")){
+                //Close activity
+                getActivity().finish();
+            }
         }
     };
 

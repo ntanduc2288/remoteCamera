@@ -1,4 +1,4 @@
-package com.hkid.remotecamera.ui.home;
+package com.hkid.remotecamera.presenter.home;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;

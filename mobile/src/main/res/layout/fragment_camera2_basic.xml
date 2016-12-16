@@ -56,4 +56,15 @@
         android:background="#123abc"
         android:id="@+id/imgPreview"/>
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/camera_result"
+        android:layout_gravity="right|center_vertical"
+        android:onClick="imageView_onClick"
+        android:scaleType="fitCenter"
+        android:longClickable="true"
+        android:clickable="true"
+        android:visibility="gone" />
+
 </RelativeLayout>
