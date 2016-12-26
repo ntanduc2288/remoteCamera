@@ -12,6 +12,7 @@ import com.data.SharedData;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
@@ -25,13 +26,15 @@ public class MainActivity extends Activity {
     Node mPhoneNode;
     ImageView imgPreview;
     Button btnTakePicture;
+    Button btnStartPreview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         imgPreview = (ImageView) findViewById(R.id.imgPreview);
-        btnTakePicture = (Button) findViewById(R.id.btnTakePicture);
+        btnTakePicture = (Button) findViewById(R.id.btnRecordBackgroundVideo);
+        btnStartPreview = (Button) findViewById(R.id.btnStartPreview);
 
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -43,20 +46,23 @@ public class MainActivity extends Activity {
                     }
 
                     @Override
-                    public void onConnectionSuspended(int i) {}
+                    public void onConnectionSuspended(int i) {
+                    }
                 })
-                .addOnConnectionFailedListener(connectionResult -> {})
+                .addOnConnectionFailedListener(connectionResult -> {
+                })
                 .addApi(Wearable.API)
                 .build();
 
         mGoogleApiClient.connect();
 
         btnTakePicture.setOnClickListener(view -> clickOnTakePicture());
+        btnStartPreview.setOnClickListener(view -> startPreviewBackground(mPhoneNode));
 
     }
 
-    @OnClick(R.id.btnTakePicture)
-    public void clickOnTakePicture(){
+    @OnClick(R.id.btnRecordBackgroundVideo)
+    public void clickOnTakePicture() {
         startRecordBackgroundVideo(mPhoneNode);
     }
 
@@ -67,13 +73,18 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
 
-    MessageApi.MessageListener messageListener = messageEvent -> onMessageResult(messageEvent.getData());
+    // Listen messages
+    MessageApi.MessageListener messageListener = messageEvent -> onMessageResult(messageEvent);
 
-    private void onMessageResult(byte[] data) {
+    private void onMessageResult(MessageEvent messageEvents) {
         runOnUiThread(() -> {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            String path = messageEvents.getPath();
+            if(path.equals(SharedData.START_PREVIEW_CAMERA_BACKGROUND)){
+                byte[] data = messageEvents.getData();
+                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 
-            imgPreview.setImageBitmap(bitmap);
+                imgPreview.setImageBitmap(bitmap);
+            }
         });
     }
 
@@ -87,15 +98,22 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void startRecordBackgroundVideo(Node phoneNode){
-        if(phoneNode != null && mGoogleApiClient != null){
+    private void startRecordBackgroundVideo(Node phoneNode) {
+        if (phoneNode != null && mGoogleApiClient != null) {
             Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedData.START_RECORD_VIDEO_BACKGROUND, null);
         }
     }
 
-    private void stopRecordBackgroundVideo(Node phoneNode){
-        if(phoneNode != null && mGoogleApiClient != null){
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedData.STTOP_RECORD_VIDEO_BACKGROUND, null);
+    private void stopRecordBackgroundVideo(Node phoneNode) {
+        if (phoneNode != null && mGoogleApiClient != null) {
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedData.STOP_RECORD_VIDEO_BACKGROUND, null);
         }
     }
+
+    private void startPreviewBackground(Node phoneNode) {
+        if (phoneNode != null && mGoogleApiClient != null) {
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedData.START_PREVIEW_CAMERA_BACKGROUND, null);
+        }
+    }
+
 }

@@ -9,7 +9,7 @@ import android.view.SurfaceView;
 import android.view.View;
 
 import com.hkid.remotecamera.R;
-import com.hkid.remotecamera.domain.service.BackgroundVideoRecorder;
+import com.hkid.remotecamera.domain.service.BackgroundVideoRecorderService;
 
 /**
  * @author Duc Nguyen
@@ -54,7 +54,7 @@ public class SplashActivity extends FragmentActivity implements SurfaceHolder.Ca
 
 
     protected void startRecordingInBackgroundThread(){
-        Intent intent = new Intent(getApplicationContext(), BackgroundVideoRecorder.class);
+        Intent intent = new Intent(getApplicationContext(), BackgroundVideoRecorderService.class);
         startService(intent);
 //        Intent intent = new Intent(this, RecorderService.class);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -63,7 +63,7 @@ public class SplashActivity extends FragmentActivity implements SurfaceHolder.Ca
     }
 
     protected void stopRecordingInBackgroundThread(){
-        Intent intent = new Intent(getApplicationContext(), BackgroundVideoRecorder.class);
+        Intent intent = new Intent(getApplicationContext(), BackgroundVideoRecorderService.class);
         stopService(intent);
 //        stopService(new Intent(this, RecorderService.class));
     }

@@ -20,8 +20,8 @@ import com.hkid.remotecamera.util.Ulti;
 
 import java.util.Calendar;
 
-public class BackgroundVideoRecorder extends Service implements SurfaceHolder.Callback {
-    public static final String TAG = BackgroundVideoRecorder.class.getName();
+public class BackgroundVideoRecorderService extends Service implements SurfaceHolder.Callback {
+    public static final String TAG = BackgroundVideoRecorderService.class.getName();
     private WindowManager windowManager;
     private SurfaceView surfaceView;
     private Camera camera = null;

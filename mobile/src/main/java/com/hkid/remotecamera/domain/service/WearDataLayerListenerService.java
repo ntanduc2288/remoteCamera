@@ -40,15 +40,23 @@ public class WearDataLayerListenerService extends WearableListenerService {
     public void onMessageReceived(MessageEvent m) {
         String path = m.getPath();
         Log.d(TAG, "onMessageReceived: " + path);
-        
+
         switch (path){
             //Start record background video
             case SharedData.START_RECORD_VIDEO_BACKGROUND:
-                startService(new Intent(this, BackgroundVideoRecorder.class));
+                startService(new Intent(this, BackgroundVideoRecorderService.class));
                 break;
             //Stop record background video
-            case SharedData.STTOP_RECORD_VIDEO_BACKGROUND:
-                stopService(new Intent(this, BackgroundVideoRecorder.class));
+            case SharedData.STOP_RECORD_VIDEO_BACKGROUND:
+                stopService(new Intent(this, BackgroundVideoRecorderService.class));
+                break;
+            //Start preview background camera
+            case SharedData.START_PREVIEW_CAMERA_BACKGROUND:
+                startService(new Intent(this, BackgroundPictureService.class));
+                break;
+            //Stop preview background camera
+            case SharedData.STOP_PREVIEW_CAMERA_BACKGROUND:
+                stopService(new Intent(this, BackgroundPictureService.class));
                 break;
         }
     }

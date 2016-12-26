@@ -71,7 +71,8 @@
             </intent-filter>
         </service>
 
-        <service android:name="com.hkid.remotecamera.domain.service.BackgroundVideoRecorder"/>
+        <service android:name="com.hkid.remotecamera.domain.service.BackgroundVideoRecorderService"/>
+        <service android:name=".domain.service.BackgroundPictureService"/>
     </application>
 
 </manifest>
