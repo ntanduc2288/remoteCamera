@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.data.SharedData;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.wearable.MessageApi;
@@ -56,12 +57,12 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.btnTakePicture)
     public void clickOnTakePicture(){
-        openPhoneApp(mPhoneNode);
+        startRecordBackgroundVideo(mPhoneNode);
     }
 
     @Override
     protected void onDestroy() {
-        closePhoneApp(mPhoneNode);
+        stopRecordBackgroundVideo(mPhoneNode);
         Wearable.MessageApi.removeListener(mGoogleApiClient, messageListener);
         super.onDestroy();
     }
@@ -81,20 +82,20 @@ public class MainActivity extends Activity {
         pendingResult.setResultCallback(getConnectedNodesResult -> {
             if (getConnectedNodesResult.getNodes().size() > 0) {
                 mPhoneNode = getConnectedNodesResult.getNodes().get(0);
-                openPhoneApp(mPhoneNode);
+//                startRecordBackgroundVideo(mPhoneNode);
             }
         });
     }
 
-    private void openPhoneApp(Node phoneNode){
+    private void startRecordBackgroundVideo(Node phoneNode){
         if(phoneNode != null && mGoogleApiClient != null){
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), "start", null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedData.START_RECORD_VIDEO_BACKGROUND, null);
         }
     }
 
-    private void closePhoneApp(Node phoneNode){
+    private void stopRecordBackgroundVideo(Node phoneNode){
         if(phoneNode != null && mGoogleApiClient != null){
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), "close", null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedData.STTOP_RECORD_VIDEO_BACKGROUND, null);
         }
     }
 }

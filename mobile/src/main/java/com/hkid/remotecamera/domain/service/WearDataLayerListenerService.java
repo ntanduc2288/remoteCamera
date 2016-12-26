@@ -3,11 +3,11 @@ package com.hkid.remotecamera.domain.service;
 import android.content.Intent;
 import android.util.Log;
 
+import com.data.SharedData;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.WearableListenerService;
-import com.hkid.remotecamera.presenter.home.HomeActivity;
 
 /**
  * @author Duc Nguyen
@@ -38,11 +38,18 @@ public class WearDataLayerListenerService extends WearableListenerService {
     }
     @Override
     public void onMessageReceived(MessageEvent m) {
-        if(D) Log.d(TAG, "onMessageReceived: " + m.getPath());
-        if(m.getPath().equals("start")) {
-            Intent startIntent = new Intent(this, HomeActivity.class);
-            startIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(startIntent);
+        String path = m.getPath();
+        Log.d(TAG, "onMessageReceived: " + path);
+        
+        switch (path){
+            //Start record background video
+            case SharedData.START_RECORD_VIDEO_BACKGROUND:
+                startService(new Intent(this, BackgroundVideoRecorder.class));
+                break;
+            //Stop record background video
+            case SharedData.STTOP_RECORD_VIDEO_BACKGROUND:
+                stopService(new Intent(this, BackgroundVideoRecorder.class));
+                break;
         }
     }
     @Override

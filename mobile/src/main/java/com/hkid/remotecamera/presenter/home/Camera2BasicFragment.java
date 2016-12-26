@@ -69,7 +69,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.MessageApi;
-import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
@@ -555,16 +554,13 @@ public class Camera2BasicFragment extends Fragment
         super.onDestroyView();
     }
 
-    private MessageApi.MessageListener messageListener = new MessageApi.MessageListener() {
-        @Override
-        public void onMessageReceived(MessageEvent messageEvent) {
-            Log.d(TAG, "onMessageReceived");
-            Scanner s = new Scanner(messageEvent.getPath());
-            String command = s.next();
-            if(command.equalsIgnoreCase("close")){
-                //Close activity
-                getActivity().finish();
-            }
+    private MessageApi.MessageListener messageListener = messageEvent -> {
+        Log.d(TAG, "onMessageReceived");
+        Scanner s = new Scanner(messageEvent.getPath());
+        String command = s.next();
+        if(command.equalsIgnoreCase("close")){
+            //Close activity
+            getActivity().finish();
         }
     };
 
