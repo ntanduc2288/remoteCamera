@@ -69,6 +69,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         stopRecordBackgroundVideo(mPhoneNode);
+        stopPreviewBackground(mPhoneNode);
         Wearable.MessageApi.removeListener(mGoogleApiClient, messageListener);
         super.onDestroy();
     }
@@ -113,6 +114,12 @@ public class MainActivity extends Activity {
     private void startPreviewBackground(Node phoneNode) {
         if (phoneNode != null && mGoogleApiClient != null) {
             Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedData.START_PREVIEW_CAMERA_BACKGROUND, null);
+        }
+    }
+
+    private void stopPreviewBackground(Node phoneNode) {
+        if (phoneNode != null && mGoogleApiClient != null) {
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedData.STOP_PREVIEW_CAMERA_BACKGROUND, null);
         }
     }
 

@@ -629,7 +629,10 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
 
     @Override
     public void onDestroy() {
+        Log.d("BackgroundPictureServic", "onDestroy");
+        mPreviewRunning = false;
         if (mCamera != null) {
+            mCamera.setPreviewCallback(null);
             mCamera.stopPreview();
             mCamera.release();
             mCamera = null;
@@ -648,6 +651,7 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width,
                                int height) {
+        Log.d("BackgroundPictureServic", "surfaceChanged");
         try {
             if(mCamera != null){
                 mCamera.setPreviewDisplay(holder);
@@ -657,6 +661,9 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
 //                        if (mWearableNode != null && readyToProcessImage && mPreviewRunning && displayFrameLag<6 && displayTimeLag<2000
 //                                && System.currentTimeMillis() - lastMessageTime < 4000) {
 //                    readyToProcessImage = false;
+                        if(!mPreviewRunning){
+                            return;
+                        }
                         Camera.Size previewSize = mCamera.getParameters().getPreviewSize();
 
                         int[] rgb = decodeYUV420SP(data, previewSize.width, previewSize.height);
@@ -671,7 +678,7 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
 //                    } else {
 //                        dimension = 200;
 //                    }
-                        dimension = 200;
+                        dimension = 150;
                         if(previewSize.width > previewSize.height) {
                             smallWidth = dimension;
                             smallHeight = dimension*previewSize.height/previewSize.width;
@@ -686,7 +693,7 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
                         Bitmap bmpSmall = Bitmap.createScaledBitmap(bmp, smallWidth, smallHeight, false);
                         Bitmap bmpSmallRotated = Bitmap.createBitmap(bmpSmall, 0, 0, smallWidth, smallHeight, matrix, false);
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        bmpSmallRotated.compress(Bitmap.CompressFormat.WEBP, 30, baos);
+                        bmpSmallRotated.compress(Bitmap.CompressFormat.WEBP, 100, baos);
 //                        displayFrameLag++;
                         sendToWearable(SharedData.START_PREVIEW_CAMERA_BACKGROUND, baos.toByteArray(), new ResultCallback<MessageApi.SendMessageResult>() {
                             @Override
@@ -763,6 +770,9 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        if(sHolder != null){
+            sHolder.removeCallback(this);
+        }
         if (mCamera != null) {
             mCamera.stopPreview();
             mCamera.release();
