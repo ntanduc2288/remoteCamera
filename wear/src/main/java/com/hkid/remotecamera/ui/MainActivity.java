@@ -1,4 +1,4 @@
-package com.hkid.remotecamera;
+package com.hkid.remotecamera.ui;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -16,6 +16,7 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
+import com.hkid.remotecamera.R;
 
 import butterknife.OnClick;
 
