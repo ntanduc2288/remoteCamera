@@ -42,6 +42,7 @@ public class WearableAdapter extends WearableListView.Adapter {
         TextView textView = itemViewHolder.mItemTextView;
         ModeObject modeObject = mItems.get(position);
         textView.setText(modeObject.getName());
+        itemViewHolder.setModeObject(modeObject);
 
         switch (modeObject.getModeType()){
             case HIDDEN_PICTURE:
@@ -58,22 +59,22 @@ public class WearableAdapter extends WearableListView.Adapter {
                 break;
         }
 
-        ((ViewGroup)textView.getParent()).setOnClickListener(v -> {
-            switch (modeObject.getModeType()){
-                case HIDDEN_PICTURE:
-                    view.openHiddenPictureView();
-                    break;
-                case HIDDEN_VIDEO:
-                    view.openHiddenVideoView();
-                    break;
-                case RECORD_AUDIO:
-                    view.openRecordAudioView();
-                    break;
-                case PREVIEW_CAMERA:
-                    view.openPreviewCameraView();
-                    break;
-            }
-        });
+//        ((ViewGroup)textView.getParent()).setOnClickListener(v -> {
+//            switch (modeObject.getModeType()){
+//                case HIDDEN_PICTURE:
+//                    view.openHiddenPictureView();
+//                    break;
+//                case HIDDEN_VIDEO:
+//                    view.openHiddenVideoView();
+//                    break;
+//                case RECORD_AUDIO:
+//                    view.openRecordAudioView();
+//                    break;
+//                case PREVIEW_CAMERA:
+//                    view.openPreviewCameraView();
+//                    break;
+//            }
+//        });
 
 //        circledView.setOnClickListener(view -> {
 //            WearableListItemLayout parentView = (WearableListItemLayout) circledView.getParent();
@@ -93,16 +94,25 @@ public class WearableAdapter extends WearableListView.Adapter {
         return mItems.size();
     }
 
-    private static class ItemViewHolder extends WearableListView.ViewHolder {
+    public static class ItemViewHolder extends WearableListView.ViewHolder {
         CircledImageView mCircledImageView;
         TextView mItemTextView;
         ImageView imgTitle;
+        ModeObject modeObject;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             mCircledImageView = (CircledImageView) itemView.findViewById(R.id.circle);
             mItemTextView = (TextView) itemView.findViewById(R.id.name);
             imgTitle = (ImageView) itemView.findViewById(R.id.imgTitle);
+        }
+
+        public void setModeObject(ModeObject modeObject) {
+            this.modeObject = modeObject;
+        }
+
+        public ModeObject getModeObject() {
+            return modeObject;
         }
     }
 }

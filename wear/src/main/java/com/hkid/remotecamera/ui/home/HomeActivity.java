@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.wearable.view.WearableListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hkid.remotecamera.R;
 import com.hkid.remotecamera.adapter.WearableAdapter;
@@ -26,7 +27,6 @@ public class HomeActivity extends FragmentActivity implements HomePresenter.View
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
         initModes();
         // This is our list header
         lblHeader = (TextView) findViewById(R.id.lblHeader);
@@ -34,6 +34,37 @@ public class HomeActivity extends FragmentActivity implements HomePresenter.View
         WearableListView wearableListView = (WearableListView) findViewById(R.id.wearable_list);
         wearableListView.setAdapter(new WearableAdapter(this, modes, this));
         wearableListView.addOnScrollListener(mOnScrollListener);
+        wearableListView.setClickListener(new WearableListView.ClickListener() {
+            @Override
+            public void onClick(WearableListView.ViewHolder viewHolder) {
+                WearableAdapter.ItemViewHolder itemViewHolder = (WearableAdapter.ItemViewHolder) viewHolder;
+                if (itemViewHolder != null) {
+                    ModeObject modeObject = itemViewHolder.getModeObject();
+
+                    if (modeObject != null) {
+                        switch (modeObject.getModeType()) {
+                            case HIDDEN_PICTURE:
+                                openHiddenPictureView();
+                                break;
+                            case HIDDEN_VIDEO:
+                                openHiddenVideoView();
+                                break;
+                            case RECORD_AUDIO:
+                                openRecordAudioView();
+                                break;
+                            case PREVIEW_CAMERA:
+                                openPreviewCameraView();
+                                break;
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onTopEmptyRegionClick() {
+
+            }
+        });
     }
 
 
@@ -67,7 +98,7 @@ public class HomeActivity extends FragmentActivity implements HomePresenter.View
             };
 
 
-    private void initModes(){
+    private void initModes() {
         modes = new ArrayList<>();
 
         ModeObject modeHiddenVideo = new ModeObject(1, "Hidden Video", ModeObject.MODE_TYPE.HIDDEN_VIDEO);
@@ -82,21 +113,21 @@ public class HomeActivity extends FragmentActivity implements HomePresenter.View
 
     @Override
     public void openHiddenPictureView() {
-
+        Toast.makeText(this, "openHiddenPictureView", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void openHiddenVideoView() {
-
+        Toast.makeText(this, "openHiddenVideoView", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void openRecordAudioView() {
-
+        Toast.makeText(this, "openRecordAudioView", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void openPreviewCameraView() {
-
+        Toast.makeText(this, "openPreviewCameraView", Toast.LENGTH_SHORT).show();
     }
 }
