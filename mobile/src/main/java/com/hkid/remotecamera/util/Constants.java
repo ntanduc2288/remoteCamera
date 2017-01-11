@@ -36,4 +36,6 @@ public class Constants {
         put("45 sec", 45 * 1000);
         put("30 sec", 30 * 1000);
     }};
+
+    public static final String SWITCH_CAMERA = "SWITCH_CAMERA";
 }

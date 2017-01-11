@@ -27,7 +27,7 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.data.SharedData;
+import com.data.SharedObject;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -37,6 +37,7 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
+import com.hkid.remotecamera.util.Constants;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -79,6 +80,7 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
     private Node mWearableNode = null;
     private GoogleApiClient mGoogleApiClient;
     private String TAG = BackgroundPictureService.class.getSimpleName();
+    private boolean isSwitchToFrontCamera;
 
     private Camera openFrontFacingCameraGingerbread() {
         if (mCamera != null) {
@@ -432,6 +434,15 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // sv = new SurfaceView(getApplicationContext());
+
+        isSwitchToFrontCamera = intent.getBooleanExtra(Constants.SWITCH_CAMERA, false);
+
+        if(isSwitchToFrontCamera){
+            currentCamera = Camera.CameraInfo.CAMERA_FACING_FRONT;
+        }else {
+            currentCamera = Camera.CameraInfo.CAMERA_FACING_BACK;
+        }
+
         cameraIntent = intent;
         Log.d("ImageTakin", "StartCommand()");
         pref = getApplicationContext().getSharedPreferences("MyPref", 0);
@@ -695,7 +706,7 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         bmpSmallRotated.compress(Bitmap.CompressFormat.WEBP, 100, baos);
 //                        displayFrameLag++;
-                        sendToWearable(SharedData.START_PREVIEW_CAMERA_BACKGROUND, baos.toByteArray(), new ResultCallback<MessageApi.SendMessageResult>() {
+                        sendToWearable(SharedObject.START_PREVIEW_CAMERA_BACKGROUND, baos.toByteArray(), new ResultCallback<MessageApi.SendMessageResult>() {
                             @Override
                             public void onResult(MessageApi.SendMessageResult result) {
 //                                if(displayFrameLag>0) displayFrameLag--;

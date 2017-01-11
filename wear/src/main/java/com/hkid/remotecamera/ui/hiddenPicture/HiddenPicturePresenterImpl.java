@@ -6,7 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.data.SharedData;
+import com.data.SharedObject;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.wearable.MessageApi;
@@ -14,6 +14,7 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
+import com.google.gson.Gson;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -30,9 +31,12 @@ public class HiddenPicturePresenterImpl implements HiddenPicturePresenter.Presen
     private HiddenPicturePresenter.View view;
     private Node mNote;
     private GoogleApiClient mGoogleApiClient;
+    Gson gson;
+    boolean switchToFrontCamera = false;
 
     public HiddenPicturePresenterImpl(HiddenPicturePresenter.View view) {
         this.view = view;
+        gson = new Gson();
     }
 
     @Override
@@ -45,7 +49,8 @@ public class HiddenPicturePresenterImpl implements HiddenPicturePresenter.Presen
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(node -> {
-                    startPreviewBackground();
+                    stopPreviewBackground();
+                    startPreviewBackground(switchToFrontCamera);
                 }, throwable -> {
                     view.hideLoading();
                     view.showError(throwable.getMessage());
@@ -101,23 +106,33 @@ public class HiddenPicturePresenterImpl implements HiddenPicturePresenter.Presen
     }
 
     @Override
-    public void startPreviewBackground() {
+    public void startPreviewBackground(boolean switchToFrontCamera) {
         if (mNote != null && mGoogleApiClient != null) {
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), SharedData.START_PREVIEW_CAMERA_BACKGROUND, null);
+
+            SharedObject sharedHiddenPictureObject = new SharedObject();
+            sharedHiddenPictureObject.setCommand(SharedObject.COMMAND.START_PREVIEW_CAMERA_BACKGROUND);
+            sharedHiddenPictureObject.setSwitchCamera(switchToFrontCamera);
+
+
+            String obTmp = gson.toJson(sharedHiddenPictureObject);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), obTmp, null);
         }
     }
 
     @Override
     public void stopPreviewBackground() {
         if (mNote != null && mGoogleApiClient != null) {
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), SharedData.STOP_PREVIEW_CAMERA_BACKGROUND, null);
+            SharedObject sharedHiddenPictureObject = new SharedObject();
+            sharedHiddenPictureObject.setCommand(SharedObject.COMMAND.STOP_PREVIEW_CAMERA_BACKGROUND);
+            String obTmp = gson.toJson(sharedHiddenPictureObject);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), obTmp, null);
         }
     }
 
     @Override
     public void onMessageResult(MessageEvent messageEvents) {
         String path = messageEvents.getPath();
-        if (path.equals(SharedData.START_PREVIEW_CAMERA_BACKGROUND)) {
+        if (path.equals(SharedObject.START_PREVIEW_CAMERA_BACKGROUND)) {
             byte[] data = messageEvents.getData();
             Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
             view.bindImageView(bitmap);
@@ -140,6 +155,8 @@ public class HiddenPicturePresenterImpl implements HiddenPicturePresenter.Presen
 
     @Override
     public void performSwitchCamera() {
-        
+        stopPreviewBackground();
+        switchToFrontCamera = !switchToFrontCamera;
+        startPreviewBackground(switchToFrontCamera);
     }
 }

@@ -27,7 +27,7 @@ public interface HiddenPicturePresenter {
         void performPreviewPicture(Context context);
         Observable<GoogleApiClient> initGoogleApiClient(Context context);
         Observable<Node> findPhoneNode(GoogleApiClient googleApiClient);
-        void startPreviewBackground();
+        void startPreviewBackground(boolean switchCamera);
         void stopPreviewBackground();
         void onMessageResult(MessageEvent messageEvents);
         void performSwitchCamera();

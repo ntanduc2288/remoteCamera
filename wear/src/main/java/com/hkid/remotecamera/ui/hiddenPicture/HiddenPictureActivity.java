@@ -7,7 +7,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.data.SharedData;
+import com.data.SharedObject;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
@@ -52,13 +52,13 @@ public class HiddenPictureActivity extends BaseActivity implements HiddenPicture
 
     private void startRecordBackgroundVideo(Node phoneNode, GoogleApiClient mGoogleApiClient) {
         if (phoneNode != null && mGoogleApiClient != null) {
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedData.START_RECORD_VIDEO_BACKGROUND, null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedObject.START_RECORD_VIDEO_BACKGROUND, null);
         }
     }
 
     private void stopRecordBackgroundVideo(Node phoneNode, GoogleApiClient mGoogleApiClient) {
         if (phoneNode != null && mGoogleApiClient != null) {
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedData.STOP_RECORD_VIDEO_BACKGROUND, null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedObject.STOP_RECORD_VIDEO_BACKGROUND, null);
         }
     }
 

@@ -3,11 +3,13 @@ package com.hkid.remotecamera.domain.service;
 import android.content.Intent;
 import android.util.Log;
 
-import com.data.SharedData;
+import com.data.SharedObject;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.WearableListenerService;
+import com.google.gson.Gson;
+import com.hkid.remotecamera.util.Constants;
 
 /**
  * @author Duc Nguyen
@@ -18,11 +20,12 @@ public class WearDataLayerListenerService extends WearableListenerService {
 
     private static final String TAG = WearDataLayerListenerService.class.getSimpleName();
     private static final boolean D = true;
-
+    private Gson gson;
     @Override
     public void onCreate() {
         if(D) Log.d(TAG, "onCreate");
         super.onCreate();
+        gson = new Gson();
     }
 
     @Override
@@ -41,24 +44,34 @@ public class WearDataLayerListenerService extends WearableListenerService {
         String path = m.getPath();
         Log.d(TAG, "onMessageReceived: " + path);
 
-        switch (path){
-            //Start record background video
-            case SharedData.START_RECORD_VIDEO_BACKGROUND:
-                startService(new Intent(this, BackgroundVideoRecorderService.class));
-                break;
-            //Stop record background video
-            case SharedData.STOP_RECORD_VIDEO_BACKGROUND:
-                stopService(new Intent(this, BackgroundVideoRecorderService.class));
-                break;
-            //Start preview background camera
-            case SharedData.START_PREVIEW_CAMERA_BACKGROUND:
-                startService(new Intent(this, BackgroundPictureService.class));
-                break;
-            //Stop preview background camera
-            case SharedData.STOP_PREVIEW_CAMERA_BACKGROUND:
-                stopService(new Intent(this, BackgroundPictureService.class));
-                break;
+        try{
+            SharedObject sharedObject = gson.fromJson(path, SharedObject.class);
+            if(sharedObject != null){
+                boolean switchCamera = sharedObject.isSwitchCamera();
+                switch (sharedObject.getCommand()){
+                    case START_PREVIEW_CAMERA_BACKGROUND:
+                        Intent intent = new Intent(this, BackgroundPictureService.class);
+                        intent.putExtra(Constants.SWITCH_CAMERA, switchCamera);
+                        startService(intent);
+                        break;
+                    case STOP_PREVIEW_CAMERA_BACKGROUND:
+                        stopService(new Intent(this, BackgroundPictureService.class));
+                        break;
+                    case START_RECORD_VIDEO_BACKGROUND:
+                        Intent intentBg = new Intent(this, BackgroundVideoRecorderService.class);
+                        intentBg.putExtra(Constants.SWITCH_CAMERA, switchCamera);
+                        startService(intentBg);
+                        break;
+                    case STOP_RECORD_VIDEO_BACKGROUND:
+                        stopService(new Intent(this, BackgroundVideoRecorderService.class));
+                        break;
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+
         }
+
     }
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {

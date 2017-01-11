@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.data.SharedData;
+import com.data.SharedObject;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.wearable.MessageApi;
@@ -81,7 +81,7 @@ public class MainActivity extends Activity {
     private void onMessageResult(MessageEvent messageEvents) {
         runOnUiThread(() -> {
             String path = messageEvents.getPath();
-            if(path.equals(SharedData.START_PREVIEW_CAMERA_BACKGROUND)){
+            if(path.equals(SharedObject.START_PREVIEW_CAMERA_BACKGROUND)){
                 byte[] data = messageEvents.getData();
                 Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 
@@ -102,25 +102,25 @@ public class MainActivity extends Activity {
 
     private void startRecordBackgroundVideo(Node phoneNode) {
         if (phoneNode != null && mGoogleApiClient != null) {
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedData.START_RECORD_VIDEO_BACKGROUND, null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedObject.START_RECORD_VIDEO_BACKGROUND, null);
         }
     }
 
     private void stopRecordBackgroundVideo(Node phoneNode) {
         if (phoneNode != null && mGoogleApiClient != null) {
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedData.STOP_RECORD_VIDEO_BACKGROUND, null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedObject.STOP_RECORD_VIDEO_BACKGROUND, null);
         }
     }
 
     private void startPreviewBackground(Node phoneNode) {
         if (phoneNode != null && mGoogleApiClient != null) {
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedData.START_PREVIEW_CAMERA_BACKGROUND, null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedObject.START_PREVIEW_CAMERA_BACKGROUND, null);
         }
     }
 
     private void stopPreviewBackground(Node phoneNode) {
         if (phoneNode != null && mGoogleApiClient != null) {
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedData.STOP_PREVIEW_CAMERA_BACKGROUND, null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedObject.STOP_PREVIEW_CAMERA_BACKGROUND, null);
         }
     }
 
