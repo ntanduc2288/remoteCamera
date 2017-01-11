@@ -1,8 +1,6 @@
 package com.hkid.remotecamera.ui.home;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
+import android.content.Intent;
 import android.support.wearable.view.WearableListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -10,6 +8,8 @@ import android.widget.Toast;
 import com.hkid.remotecamera.R;
 import com.hkid.remotecamera.adapter.WearableAdapter;
 import com.hkid.remotecamera.object.ModeObject;
+import com.hkid.remotecamera.ui.BaseActivity;
+import com.hkid.remotecamera.ui.hiddenPicture.HiddenPictureActivity;
 
 import java.util.ArrayList;
 
@@ -18,15 +18,18 @@ import java.util.ArrayList;
  * @version 1.0
  * @since 12/27/16
  */
-public class HomeActivity extends FragmentActivity implements HomePresenter.View {
+public class HomeActivity extends BaseActivity implements HomePresenter.View {
 
     private static ArrayList<ModeObject> modes;
     private TextView lblHeader;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+    protected int getResourceLayout() {
+        return R.layout.activity_home;
+    }
+
+    @Override
+    protected void setupViews() {
         initModes();
         // This is our list header
         lblHeader = (TextView) findViewById(R.id.lblHeader);
@@ -66,7 +69,6 @@ public class HomeActivity extends FragmentActivity implements HomePresenter.View
             }
         });
     }
-
 
     // The following code ensures that the title scrolls as the user scrolls up
     // or down the list
@@ -113,7 +115,8 @@ public class HomeActivity extends FragmentActivity implements HomePresenter.View
 
     @Override
     public void openHiddenPictureView() {
-        Toast.makeText(this, "openHiddenPictureView", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, HiddenPictureActivity.class);
+        startActivity(intent);
     }
 
     @Override
