@@ -24,6 +24,7 @@ public interface HiddenPicturePresenter {
         void showError(String message);
         void bindPreviewImageView(Bitmap bitmap);
         void bindTakePictureImageView(Bitmap bitmap);
+        void setBackgroundForSwitchCameraButton(int res);
     }
 
     interface Presenter{

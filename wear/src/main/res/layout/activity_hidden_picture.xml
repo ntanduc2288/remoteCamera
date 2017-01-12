@@ -31,22 +31,22 @@
             android:layout_height="match_parent"
             android:id="@+id/rlControl">
             <Button
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="10dp"
                 android:id="@+id/btnSwitchCamera"
-                android:background="@drawable/switch_camera_icon"/>
+                android:background="@drawable/rear_camera_icon"/>
 
             <Button
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:id="@+id/btnTakePicture"
-                android:background="@drawable/switch_camera_icon"/>
+                android:background="@drawable/cicle_icon"/>
         </RelativeLayout>
 
 

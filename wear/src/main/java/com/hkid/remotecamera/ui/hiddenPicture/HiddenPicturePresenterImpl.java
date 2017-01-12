@@ -15,6 +15,7 @@ import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 import com.google.gson.Gson;
+import com.hkid.remotecamera.R;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -173,6 +174,11 @@ public class HiddenPicturePresenterImpl implements HiddenPicturePresenter.Presen
     public void performSwitchCamera() {
         stopPreviewBackground();
         switchToFrontCamera = !switchToFrontCamera;
+        if(switchToFrontCamera){
+            view.setBackgroundForSwitchCameraButton(R.drawable.front_camera_icon);
+        }else {
+            view.setBackgroundForSwitchCameraButton(R.drawable.rear_camera_icon);
+        }
         startPreviewBackground(switchToFrontCamera);
     }
 

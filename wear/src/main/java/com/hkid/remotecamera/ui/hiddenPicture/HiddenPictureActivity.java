@@ -145,4 +145,9 @@ public class HiddenPictureActivity extends BaseActivity implements HiddenPicture
         });
 
     }
+
+    @Override
+    public void setBackgroundForSwitchCameraButton(int res) {
+        btnSwitchCamera.setBackgroundResource(res);
+    }
 }
