@@ -46,16 +46,16 @@ public class WearableAdapter extends WearableListView.Adapter {
 
         switch (modeObject.getModeType()){
             case HIDDEN_PICTURE:
-                itemViewHolder.imgTitle.setBackgroundResource(R.drawable.hidden_camera_icon);
+                itemViewHolder.imgTitle.setBackgroundResource(R.drawable.eye_camera_icon);
                 break;
             case HIDDEN_VIDEO:
-                itemViewHolder.imgTitle.setBackgroundResource(R.drawable.hidden_video_icon);
+                itemViewHolder.imgTitle.setBackgroundResource(R.drawable.camera_icon);
                 break;
             case RECORD_AUDIO:
                 itemViewHolder.imgTitle.setBackgroundResource(R.drawable.record_audio_icon);
                 break;
             case PREVIEW_CAMERA:
-                itemViewHolder.imgTitle.setBackgroundResource(R.drawable.remote_control_icon);
+                itemViewHolder.imgTitle.setBackgroundResource(R.drawable.hidden_camera_icon);
                 break;
         }
 

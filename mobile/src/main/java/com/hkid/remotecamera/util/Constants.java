@@ -23,9 +23,9 @@ public class Constants {
     public static final int DEFAULT_TIME_TO_RECORDING = 3 * 60 * 1000;
     public static final int DEFAULT_CAMERA = 0;
     public final static File SDROOT = Environment.getExternalStorageDirectory().getAbsoluteFile();
-    public final static String SAFEAPP_FOLDER = SDROOT + File.separator + "SafeApp";
-    public final static String VIDEO_FOLDER = SAFEAPP_FOLDER + File.separator + "Videos" + File.separator;
-    public final static String IMAGE_FOLDER = SAFEAPP_FOLDER + File.separator + "Images" + File.separator;
+    public final static String REMOTE_CAMERA_APP_FOLDER = SDROOT + File.separator + "Remote_camera_app";
+    public final static String VIDEO_FOLDER = REMOTE_CAMERA_APP_FOLDER + File.separator + "Videos" + File.separator;
+    public final static String IMAGE_FOLDER = REMOTE_CAMERA_APP_FOLDER + File.separator + "Images" + File.separator;
     public final static String PREFIX_VIDEO_NAME = "SafeApp_";
     public final static String VIDEO_TYPE = ".mp4";
     public final static String PREFIX_VIDEO_ID = "Video_";

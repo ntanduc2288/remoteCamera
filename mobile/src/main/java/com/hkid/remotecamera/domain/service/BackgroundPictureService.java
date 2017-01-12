@@ -10,12 +10,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
@@ -25,28 +21,19 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.data.SharedObject;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
-import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
-import com.google.gson.Gson;
-import com.hkid.remotecamera.util.Constants;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Scanner;
 
 import static com.hkid.remotecamera.presenter.splash.SplashActivity.mPreviewRunning;
 
@@ -55,7 +42,7 @@ import static com.hkid.remotecamera.presenter.splash.SplashActivity.mPreviewRunn
  * @version 1.0
  * @since 12/26/16
  */
-public class BackgroundPictureService extends Service implements SurfaceHolder.Callback {
+public class BackgroundPictureService extends BaseRemoteCameraService implements SurfaceHolder.Callback {
 
     // Camera variables
 // a surface holder
@@ -79,11 +66,8 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
     int width = 0, height = 0;
     private static int currentCamera = Camera.CameraInfo.CAMERA_FACING_BACK;
     public int mCameraOrientation;
-    private Node mWearableNode = null;
-    private GoogleApiClient mGoogleApiClient;
     private String TAG = BackgroundPictureService.class.getSimpleName();
-    private boolean isSwitchToFrontCamera;
-    private Gson gson;
+
 
     private Camera openFrontFacingCameraGingerbread() {
         if (mCamera != null) {
@@ -111,21 +95,6 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
             }
         }
         return cam;
-    }
-
-    void findWearableNode() {
-        PendingResult<NodeApi.GetConnectedNodesResult> nodes = Wearable.NodeApi.getConnectedNodes(mGoogleApiClient);
-        nodes.setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
-            @Override
-            public void onResult(NodeApi.GetConnectedNodesResult result) {
-                if(result.getNodes().size()>0) {
-                    mWearableNode = result.getNodes().get(0);
-                    Log.d(TAG, "Found wearable: name=" + mWearableNode.getDisplayName() + ", id=" + mWearableNode.getId());
-                } else {
-                    mWearableNode = null;
-                }
-            }
-        });
     }
 
     private void setBesttPictureResolution() {
@@ -170,7 +139,9 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
         return (result);
     }
 
-    /** Check if this device has a camera */
+    /**
+     * Check if this device has a camera
+     */
     private boolean checkCameraHardware(Context context) {
         if (context.getPackageManager().hasSystemFeature(
                 PackageManager.FEATURE_CAMERA)) {
@@ -182,7 +153,9 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
         }
     }
 
-    /** Check if this device has front camera */
+    /**
+     * Check if this device has front camera
+     */
     private boolean checkFrontCamera(Context context) {
         if (context.getPackageManager().hasSystemFeature(
                 PackageManager.FEATURE_CAMERA_FRONT)) {
@@ -196,245 +169,8 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
 
     Handler handler = new Handler();
 
-    private class TakeImage extends AsyncTask<Intent, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Intent... params) {
-            takeImage(params[0]);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-        }
-    }
-
-    private synchronized void takeImage(Intent intent) {
-
-        if (checkCameraHardware(getApplicationContext())) {
-            Bundle extras = intent.getExtras();
-            if (extras != null) {
-                String flash_mode = extras.getString("FLASH");
-                FLASH_MODE = flash_mode;
-
-                boolean front_cam_req = extras.getBoolean("Front_Request");
-                isFrontCamRequest = front_cam_req;
-
-                int quality_mode = extras.getInt("Quality_Mode");
-                QUALITY_MODE = quality_mode;
-            }
-
-            if (isFrontCamRequest) {
-
-                // set flash 0ff
-                FLASH_MODE = "off";
-                // only for gingerbread and newer versions
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD) {
-
-                    mCamera = openFrontFacingCameraGingerbread();
-                    if (mCamera != null) {
-
-                        try {
-                            mCamera.setPreviewDisplay(sv.getHolder());
-                        } catch (IOException e) {
-                            handler.post(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    Toast.makeText(getApplicationContext(),
-                                            "API dosen't support front camera",
-                                            Toast.LENGTH_LONG).show();
-                                }
-                            });
-
-                            stopSelf();
-                        }
-                        Camera.Parameters parameters = mCamera.getParameters();
-                        pictureSize = getBiggesttPictureSize(parameters);
-                        if (pictureSize != null)
-                            parameters
-                                    .setPictureSize(pictureSize.width, pictureSize.height);
-
-                        // set camera parameters
-                        mCamera.setParameters(parameters);
-                        mCamera.startPreview();
-                        mCamera.takePicture(null, null, mCall);
-
-                        // return 4;
-
-                    } else {
-                        mCamera = null;
-                        handler.post(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                Toast.makeText(
-                                        getApplicationContext(),
-                                        "Your Device dosen't have Front Camera !",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-                        stopSelf();
-                    }
-                /*
-                 * sHolder = sv.getHolder(); // tells Android that this
-                 * surface will have its data // constantly // replaced if
-                 * (Build.VERSION.SDK_INT < 11)
-                 *
-                 * sHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS)
-                 */
-                } else {
-                    if (checkFrontCamera(getApplicationContext())) {
-                        mCamera = openFrontFacingCameraGingerbread();
-
-                        if (mCamera != null) {
-
-                            try {
-                                mCamera.setPreviewDisplay(sv.getHolder());
-                            } catch (IOException e) {
-                                handler.post(new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(
-                                                getApplicationContext(),
-                                                "API dosen't support front camera",
-                                                Toast.LENGTH_LONG).show();
-                                    }
-                                });
-
-                                stopSelf();
-                            }
-                            Camera.Parameters parameters = mCamera.getParameters();
-                            pictureSize = getBiggesttPictureSize(parameters);
-                            if (pictureSize != null)
-                                parameters
-                                        .setPictureSize(pictureSize.width, pictureSize.height);
-
-                            // set camera parameters
-                            mCamera.setParameters(parameters);
-                            mCamera.startPreview();
-                            mCamera.takePicture(null, null, mCall);
-                            // return 4;
-
-                        } else {
-                            mCamera = null;
-                        /*
-                         * Toast.makeText(getApplicationContext(),
-                         * "API dosen't support front camera",
-                         * Toast.LENGTH_LONG).show();
-                         */
-                            handler.post(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    Toast.makeText(
-                                            getApplicationContext(),
-                                            "Your Device dosen't have Front Camera !",
-                                            Toast.LENGTH_LONG).show();
-
-                                }
-                            });
-
-                            stopSelf();
-
-                        }
-                        // Get a surface
-                    /*
-                     * sHolder = sv.getHolder(); // tells Android that this
-                     * surface will have its data // constantly // replaced
-                     * if (Build.VERSION.SDK_INT < 11)
-                     *
-                     * sHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS
-                     * );
-                     */
-                    }
-
-                }
-
-            } else {
-
-                if (mCamera != null) {
-                    mCamera.stopPreview();
-                    mCamera.release();
-                    mCamera = Camera.open();
-                } else
-                    mCamera = getCameraInstance();
-
-                try {
-                    if (mCamera != null) {
-                        mCamera.setPreviewDisplay(sv.getHolder());
-                        parameters = mCamera.getParameters();
-                        if (FLASH_MODE == null || FLASH_MODE.isEmpty()) {
-                            FLASH_MODE = "auto";
-                        }
-                        parameters.setFlashMode(FLASH_MODE);
-                        // set biggest picture
-                        setBesttPictureResolution();
-                        // log quality and image format
-                        Log.d("Qaulity", parameters.getJpegQuality() + "");
-                        Log.d("Format", parameters.getPictureFormat() + "");
-
-                        // set camera parameters
-                        mCamera.setParameters(parameters);
-                        mCamera.startPreview();
-                        Log.d("ImageTakin", "OnTake()");
-                        mCamera.takePicture(null, null, mCall);
-                    } else {
-                        handler.post(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                Toast.makeText(getApplicationContext(),
-                                        "Camera is unavailable !",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-                    }
-                    // return 4;
-
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    Log.e("TAG", "CmaraHeadService()::takePicture", e);
-                }
-                // Get a surface
-            /*
-             * sHolder = sv.getHolder(); // tells Android that this surface
-             * will have its data constantly // replaced if
-             * (Build.VERSION.SDK_INT < 11)
-             *
-             * sHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-             */
-
-            }
-
-        } else {
-            // display in long period of time
-        /*
-         * Toast.makeText(getApplicationContext(),
-         * "Your Device dosen't have a Camera !", Toast.LENGTH_LONG)
-         * .show();
-         */
-            handler.post(new Runnable() {
-
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(),
-                            "Your Device dosen't have a Camera !",
-                            Toast.LENGTH_LONG).show();
-                }
-            });
-            stopSelf();
-        }
-
-        // return super.onStartCommand(intent, flags, startId);
-
-    }
-
-    public void doSnap(){
-        if(mCamera == null || !mPreviewRunning) {
+    public void doSnap() {
+        if (mCamera == null || !mPreviewRunning) {
             Log.d(TAG, "tried to snap when camera was inactive");
             return;
         }
@@ -455,18 +191,18 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
         mCamera.takePicture(null, null, jpegCallback);
     }
 
-    private byte[] reduceByteArray(byte[] data){
+    private byte[] reduceByteArray(byte[] data) {
         BitmapFactory.Options opts = new BitmapFactory.Options();
         opts.inSampleSize = 4;
         Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length, opts);
         int smallWidth, smallHeight;
         int dimension = 280;
-        if(bmp.getWidth() > bmp.getHeight()) {
+        if (bmp.getWidth() > bmp.getHeight()) {
             smallWidth = dimension;
-            smallHeight = dimension*bmp.getHeight()/bmp.getWidth();
+            smallHeight = dimension * bmp.getHeight() / bmp.getWidth();
         } else {
             smallHeight = dimension;
-            smallWidth = dimension*bmp.getWidth()/bmp.getHeight();
+            smallWidth = dimension * bmp.getWidth() / bmp.getHeight();
         }
         Bitmap bmpSmall = Bitmap.createScaledBitmap(bmp, smallWidth, smallHeight, false);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -474,15 +210,15 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
         return baos.toByteArray();
     }
 
-    private void notifyScanMedia(byte[] data){
-        try{
+    private void notifyScanMedia(byte[] data) {
+        try {
             FileOutputStream outStream = null;
             String filename = String.format("/sdcard/DCIM/Camera/img_wear_%d.jpg", System.currentTimeMillis());
             outStream = new FileOutputStream(filename);
             outStream.write(data);
             outStream.close();
             sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + filename)));
-        }catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
@@ -494,14 +230,12 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // sv = new SurfaceView(getApplicationContext());
+        super.onStartCommand(intent, flags, startId);
 
-        gson = new Gson();
 
-        isSwitchToFrontCamera = intent.getBooleanExtra(Constants.SWITCH_CAMERA, false);
-
-        if(isSwitchToFrontCamera){
+        if (isSwitchToFrontCamera) {
             currentCamera = Camera.CameraInfo.CAMERA_FACING_FRONT;
-        }else {
+        } else {
             currentCamera = Camera.CameraInfo.CAMERA_FACING_BACK;
         }
 
@@ -535,179 +269,24 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
         if (Build.VERSION.SDK_INT < 11)
             sHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                    @Override
-                    public void onConnected(Bundle connectionHint) {
-                        Log.d(TAG, "onConnected: " + connectionHint);
-                        findWearableNode();
-                        Wearable.MessageApi.addListener(mGoogleApiClient, mMessageListener);
-                    }
-                    @Override
-                    public void onConnectionSuspended(int cause) {
-                        Log.d(TAG, "onConnectionSuspended: " + cause);
-                    }
-                })
-                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
-                    @Override
-                    public void onConnectionFailed(ConnectionResult result) {
-                        Log.d(TAG, "onConnectionFailed: " + result);
-                    }
-                })
-                .addApi(Wearable.API)
-                .build();
-        mGoogleApiClient.connect();
-
         return Service.START_STICKY;
     }
 
-    private MessageApi.MessageListener mMessageListener = new MessageApi.MessageListener() {
-        @Override
-        public void onMessageReceived (MessageEvent m){
-            Log.d(TAG, "onMessageReceived: " + m.getPath());
-            String path = m.getPath();
+    @Override
+    protected void messageReceived(MessageEvent m) {
+        String path = m.getPath();
 
-            SharedObject sharedObject = gson.fromJson(path, SharedObject.class);
-            switch (sharedObject.getCommand()){
-                case TAKE_PICTURE:
-                    doSnap();
-                    break;
-            }
-
-            long lastMessageTime = System.currentTimeMillis();
-            Scanner s = new Scanner(m.getPath());
-            String command = s.next();
-
-//            if(command.equals("snap")) {
-//                doSnap();
-//            } else if(command.equals("switch")) {
-//                int arg0 = 0;
-//                if (s.hasNextInt()) arg0 = s.nextInt();
-//                doSwitch(arg0);
-//            } else if(command.equals("flash")) {
-//                int arg0 = 0;
-//                if (s.hasNextInt()) arg0 = s.nextInt();
-//                doFlash(arg0);
-//            } else if(command.equals("received")) {
-//                long arg0 = 0;
-//                if(s.hasNextLong()) arg0 = s.nextLong();
-//                displayTimeLag = System.currentTimeMillis() - arg0;
-//                if(D) Log.d(TAG, String.format("frame lag time: %d ms", displayTimeLag));
-//            } else if(command.equals("stop")) {
-//                moveTaskToBack(true);
-//            }
+        SharedObject sharedObject = gson.fromJson(path, SharedObject.class);
+        switch (sharedObject.getCommand()) {
+            case TAKE_PICTURE:
+                doSnap();
+                break;
         }
-    };
-
-    Camera.PictureCallback mCall = new Camera.PictureCallback() {
-
-        @Override
-        public void onPictureTaken(byte[] data, Camera camera) {
-            // decode the data obtained by the camera into a Bitmap
-            Log.d("ImageTakin", "Done");
-            if (bmp != null)
-                bmp.recycle();
-            System.gc();
-            bmp = decodeBitmap(data);
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            if (bmp != null && QUALITY_MODE == 0)
-                bmp.compress(Bitmap.CompressFormat.JPEG, 70, bytes);
-            else if (bmp != null && QUALITY_MODE != 0)
-                bmp.compress(Bitmap.CompressFormat.JPEG, QUALITY_MODE, bytes);
-
-            File imagesFolder = new File(
-                    Environment.getExternalStorageDirectory(), "MYGALLERY");
-            if (!imagesFolder.exists())
-                imagesFolder.mkdirs(); // <----
-            File image = new File(imagesFolder, System.currentTimeMillis()
-                    + ".jpg");
-
-            // write the bytes in file
-            try {
-                fo = new FileOutputStream(image);
-            } catch (FileNotFoundException e) {
-                Log.e("TAG", "FileNotFoundException", e);
-                // TODO Auto-generated catch block
-            }
-            try {
-                fo.write(bytes.toByteArray());
-            } catch (IOException e) {
-                Log.e("TAG", "fo.write::PictureTaken", e);
-                // TODO Auto-generated catch block
-            }
-
-            // remember close de FileOutput
-            try {
-                fo.close();
-                if (Build.VERSION.SDK_INT < 19)
-                    sendBroadcast(new Intent(
-                            Intent.ACTION_MEDIA_MOUNTED,
-                            Uri.parse("file://"
-                                    + Environment.getExternalStorageDirectory())));
-                else {
-                    MediaScannerConnection
-                            .scanFile(
-                                    getApplicationContext(),
-                                    new String[] { image.toString() },
-                                    null,
-                                    new MediaScannerConnection.OnScanCompletedListener() {
-                                        public void onScanCompleted(
-                                                String path, Uri uri) {
-                                            Log.i("ExternalStorage", "Scanned "
-                                                    + path + ":");
-                                            Log.i("ExternalStorage", "-> uri="
-                                                    + uri);
-                                        }
-                                    });
-                }
-
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            if (mCamera != null) {
-                mCamera.stopPreview();
-                mCamera.release();
-                mCamera = null;
-            }
-        /*
-         * Toast.makeText(getApplicationContext(),
-         * "Your Picture has been taken !", Toast.LENGTH_LONG).show();
-         */
-            if (bmp != null) {
-                bmp.recycle();
-                bmp = null;
-                System.gc();
-            }
-            mCamera = null;
-            handler.post(new Runnable() {
-
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(),
-                            "Your Picture has been taken !", Toast.LENGTH_SHORT)
-                            .show();
-                }
-            });
-            stopSelf();
-        }
-    };
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
         return null;
-    }
-
-    public static Camera getCameraInstance() {
-        Camera c = null;
-        try {
-            c = Camera.open(); // attempt to get a Camera instance
-        } catch (Exception e) {
-            // Camera is not available (in use or does not exist)
-        }
-        return c; // returns null if camera is unavailable
     }
 
     @Override
@@ -727,7 +306,7 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
         intent.putExtra("message", "This is my message!");
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
-        Wearable.MessageApi.removeListener(mGoogleApiClient, mMessageListener);
+
         super.onDestroy();
     }
 
@@ -736,7 +315,7 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
                                int height) {
         Log.d("BackgroundPictureServic", "surfaceChanged");
         try {
-            if(mCamera != null){
+            if (mCamera != null) {
                 mCamera.setPreviewDisplay(holder);
                 setCameraDisplayOrientation();
                 mCamera.setPreviewCallback(new Camera.PreviewCallback() {
@@ -744,7 +323,7 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
 //                        if (mWearableNode != null && readyToProcessImage && mPreviewRunning && displayFrameLag<6 && displayTimeLag<2000
 //                                && System.currentTimeMillis() - lastMessageTime < 4000) {
 //                    readyToProcessImage = false;
-                        if(!mPreviewRunning){
+                        if (!mPreviewRunning) {
                             return;
                         }
                         Camera.Size previewSize = mCamera.getParameters().getPreviewSize();
@@ -764,12 +343,12 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
 //                        dimension = 200;
 //                    }
                         dimension = 150;
-                        if(previewSize.width > previewSize.height) {
+                        if (previewSize.width > previewSize.height) {
                             smallWidth = dimension;
-                            smallHeight = dimension*previewSize.height/previewSize.width;
+                            smallHeight = dimension * previewSize.height / previewSize.width;
                         } else {
                             smallHeight = dimension;
-                            smallWidth = dimension*previewSize.width/previewSize.height;
+                            smallWidth = dimension * previewSize.width / previewSize.height;
                         }
 
                         Matrix matrix = new Matrix();
@@ -793,7 +372,7 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
                     }
                 });
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         mCamera.startPreview();
@@ -820,9 +399,9 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
         }
     }
 
-    public int[] decodeYUV420SP( byte[] yuv420sp, int width, int height) {
+    public int[] decodeYUV420SP(byte[] yuv420sp, int width, int height) {
         final int frameSize = width * height;
-        int rgb[]=new int[width*height];
+        int rgb[] = new int[width * height];
         for (int j = 0, yp = 0; j < height; j++) {
             int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
             for (int i = 0; i < width; i++, yp++) {
@@ -836,14 +415,18 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
                 int r = (y1192 + 1634 * v);
                 int g = (y1192 - 833 * v - 400 * u);
                 int b = (y1192 + 2066 * u);
-                if (r < 0) r = 0; else if (r > 262143) r = 262143;
-                if (g < 0) g = 0; else if (g > 262143) g = 262143;
-                if (b < 0) b = 0; else if (b > 262143) b = 262143;
+                if (r < 0) r = 0;
+                else if (r > 262143) r = 262143;
+                if (g < 0) g = 0;
+                else if (g > 262143) g = 262143;
+                if (b < 0) b = 0;
+                else if (b > 262143) b = 262143;
                 rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000)
                         | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
             }
         }
-        return rgb;   }
+        return rgb;
+    }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -854,7 +437,7 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        if(sHolder != null){
+        if (sHolder != null) {
             sHolder.removeCallback(this);
         }
         if (mCamera != null) {
@@ -862,26 +445,6 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
             mCamera.release();
             mCamera = null;
         }
-    }
-
-    public static Bitmap decodeBitmap(byte[] data) {
-
-        Bitmap bitmap = null;
-        BitmapFactory.Options bfOptions = new BitmapFactory.Options();
-        bfOptions.inDither = false; // Disable Dithering mode
-        bfOptions.inPurgeable = true; // Tell to gc that whether it needs free
-        // memory, the Bitmap can be cleared
-        bfOptions.inInputShareable = true; // Which kind of reference will be
-        // used to recover the Bitmap data
-        // after being clear, when it will
-        // be used in the future
-        bfOptions.inTempStorage = new byte[32 * 1024];
-
-        if (data != null)
-            bitmap = BitmapFactory.decodeByteArray(data, 0, data.length,
-                    bfOptions);
-
-        return bitmap;
     }
 
     public void setCameraDisplayOrientation() {
@@ -904,7 +467,7 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
                 break;
         }
         int resultA = 0, resultB = 0;
-        if(currentCamera == Camera.CameraInfo.CAMERA_FACING_BACK) {
+        if (currentCamera == Camera.CameraInfo.CAMERA_FACING_BACK) {
             resultA = (info.orientation - degrees + 360) % 360;
             resultB = (info.orientation - degrees + 360) % 360;
             mCamera.setDisplayOrientation(resultA);

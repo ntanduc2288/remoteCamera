@@ -19,6 +19,16 @@ public class SharedObject {
     }
 
     COMMAND command;
+    boolean switchToFrontCamera;
+    String message;
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
     public COMMAND getCommand() {
         return command;
@@ -28,13 +38,11 @@ public class SharedObject {
         this.command = command;
     }
 
-    boolean switchCamera;
-
-    public boolean isSwitchCamera() {
-        return switchCamera;
+    public boolean isSwitchToFrontCamera() {
+        return switchToFrontCamera;
     }
 
-    public void setSwitchCamera(boolean switchCamera) {
-        this.switchCamera = switchCamera;
+    public void setSwitchToFrontCamera(boolean switchCamera) {
+        this.switchToFrontCamera = switchCamera;
     }
 }

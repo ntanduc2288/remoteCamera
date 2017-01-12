@@ -1,6 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.wearable.view.BoxInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <ProgressBar
+            android:id="@+id/prbLoading"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center" />
+
+
+
+        <com.skyfishjy.library.RippleBackground
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/rippleBg"
+            app:rb_color="@color/blue"
+            app:rb_radius="32dp"
+            app:rb_duration="3000"
+            app:rb_scale="6"
+            app:rb_rippleAmount="4">
+            <Button
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+               android:layout_centerInParent="true"
+                android:background="@drawable/cicle_icon"/>
+        </com.skyfishjy.library.RippleBackground>
+
+
+        <RelativeLayout
+            android:id="@+id/rlSwitchCameraContainer"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rear"
+                android:layout_toLeftOf="@+id/switchCameraOption"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Front"
+                android:layout_toRightOf="@+id/switchCameraOption"/>
+            <Switch
+                android:id="@+id/switchCameraOption"
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_centerInParent="true"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Recording..."
+            android:visibility="gone"
+            android:id="@+id/lblRecordingStatus"
+            android:layout_above="@+id/btnRecordVideo"/>
+
+        <Button
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="10dp"
+            android:textAllCaps="false"
+            android:layout_centerInParent="true"
+            android:id="@+id/btnRecordVideo"
+            android:drawableLeft="@drawable/start_icon"
+            android:text="Start"/>
+    </RelativeLayout>
+
+
+
 
 </android.support.wearable.view.BoxInsetLayout>

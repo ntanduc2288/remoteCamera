@@ -1,6 +1,5 @@
 package com.hkid.remotecamera.domain.service;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
@@ -15,12 +14,17 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
+import com.data.SharedObject;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.Wearable;
 import com.hkid.remotecamera.util.Constants;
 import com.hkid.remotecamera.util.Ulti;
 
 import java.util.Calendar;
 
-public class BackgroundVideoRecorderService extends Service implements SurfaceHolder.Callback {
+public class BackgroundVideoRecorderService extends BaseRemoteCameraService implements SurfaceHolder.Callback {
     public static final String TAG = BackgroundVideoRecorderService.class.getName();
     private WindowManager windowManager;
     private SurfaceView surfaceView;
@@ -33,15 +37,6 @@ public class BackgroundVideoRecorderService extends Service implements SurfaceHo
 
     @Override
     public void onCreate() {
-
-        // Start foreground service to avoid unexpected kill 
-//        Notification notification = new Notification.Builder(this)
-//            .setContentTitle("Background Video Recorder")
-//            .setContentText("")
-//            .setSmallIcon(R.drawable.lockicon)
-//            .build();
-//        startForeground(1234, notification);
-//        initNotificaiton();
         super.onCreate();
     }
 
@@ -69,17 +64,69 @@ public class BackgroundVideoRecorderService extends Service implements SurfaceHo
 
 
         try{
-            cameraId = intent.getIntExtra(Constants.CAMERA_ID, BACK_CAMERA_ID);
+            boolean isSwitchToFrontCamera = intent.getBooleanExtra(Constants.SWITCH_CAMERA, false);
+//            cameraId = intent.getIntExtra(Constants.CAMERA_ID, BACK_CAMERA_ID);
+            if(isSwitchToFrontCamera){
+                cameraId = FRONT_CAMERA_ID;
+            }else {
+                cameraId = BACK_CAMERA_ID;
+            }
 //            this.startId = startId;
         }catch (Exception e){
             e.printStackTrace();
             //Hardcode here if can not get camera id from intent
-            cameraId = 0;
+            cameraId = BACK_CAMERA_ID;
         }
 
         initSurface();
 
         return START_STICKY;
+    }
+
+    @Override
+    protected void messageReceived(MessageEvent m) {
+        String path = m.getPath();
+
+        SharedObject sharedObject = gson.fromJson(path, SharedObject.class);
+        switch (sharedObject.getCommand()) {
+            case STOP_RECORD_VIDEO_BACKGROUND:
+                notifyVideoIsStopped();
+                break;
+        }
+    }
+
+    private void notifyVideoIsRecording(){
+        if(mWearableNode != null && mGoogleApiClient != null){
+            SharedObject sharedObject = new SharedObject();
+            sharedObject.setCommand(SharedObject.COMMAND.START_RECORD_VIDEO_BACKGROUND);
+            String obTmp = gson.toJson(sharedObject);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, mWearableNode.getId(), obTmp, null);
+        }
+    }
+
+    private void notifyVideoIsStopped(){
+        if(mWearableNode != null && mGoogleApiClient != null){
+            SharedObject sharedObjectStopRecord = new SharedObject();
+            sharedObjectStopRecord.setCommand(SharedObject.COMMAND.STOP_RECORD_VIDEO_BACKGROUND);
+            sharedObjectStopRecord.setSwitchToFrontCamera(isSwitchToFrontCamera);
+            sharedObjectStopRecord.setMessage(fileName);
+            String obTmp = gson.toJson(sharedObjectStopRecord);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, mWearableNode.getId(), obTmp, null);
+        }
+    }
+
+    @Override
+    protected void findWearableNode() {
+        PendingResult<NodeApi.GetConnectedNodesResult> nodes = Wearable.NodeApi.getConnectedNodes(mGoogleApiClient);
+        nodes.setResultCallback(result -> {
+            if(result.getNodes().size()>0) {
+                mWearableNode = result.getNodes().get(0);
+                Log.d(TAG, "Found wearable: name=" + mWearableNode.getDisplayName() + ", id=" + mWearableNode.getId());
+                notifyVideoIsRecording();
+            } else {
+                mWearableNode = null;
+            }
+        });
     }
 
     // Method called right after Surface created (initializing and starting MediaRecorder)
@@ -141,10 +188,11 @@ public class BackgroundVideoRecorderService extends Service implements SurfaceHo
             });
             surfaceView.getHolder().addCallback(this );
 
+            notifyVideoIsRecording();
         } catch (Exception e) {
             e.printStackTrace();
             Ulti.deleteFile(fileName, getBaseContext());
-//            stopSelf(startId);
+            stopSelf();
         }
 
 
@@ -176,6 +224,8 @@ public class BackgroundVideoRecorderService extends Service implements SurfaceHo
             Ulti.deleteFile(fileName, getBaseContext());
 //            stopSelf(startId);
         }
+
+        notifyVideoIsStopped();
 
 
 

@@ -47,11 +47,11 @@ public class WearDataLayerListenerService extends WearableListenerService {
         try{
             SharedObject sharedObject = gson.fromJson(path, SharedObject.class);
             if(sharedObject != null){
-                boolean switchCamera = sharedObject.isSwitchCamera();
+                boolean switchToFrontCamera = sharedObject.isSwitchToFrontCamera();
                 switch (sharedObject.getCommand()){
                     case START_PREVIEW_CAMERA_BACKGROUND:
                         Intent intent = new Intent(this, BackgroundPictureService.class);
-                        intent.putExtra(Constants.SWITCH_CAMERA, switchCamera);
+                        intent.putExtra(Constants.SWITCH_CAMERA, switchToFrontCamera);
                         startService(intent);
                         break;
                     case STOP_PREVIEW_CAMERA_BACKGROUND:
@@ -59,7 +59,7 @@ public class WearDataLayerListenerService extends WearableListenerService {
                         break;
                     case START_RECORD_VIDEO_BACKGROUND:
                         Intent intentBg = new Intent(this, BackgroundVideoRecorderService.class);
-                        intentBg.putExtra(Constants.SWITCH_CAMERA, switchCamera);
+                        intentBg.putExtra(Constants.SWITCH_CAMERA, switchToFrontCamera);
                         startService(intentBg);
                         break;
                     case STOP_RECORD_VIDEO_BACKGROUND:

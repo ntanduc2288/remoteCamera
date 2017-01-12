@@ -9,12 +9,9 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.data.SharedObject;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.Wearable;
 import com.hkid.remotecamera.R;
 import com.hkid.remotecamera.ui.BaseActivity;
+import com.skyfishjy.library.RippleBackground;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,6 +35,8 @@ public class HiddenPictureActivity extends BaseActivity implements HiddenPicture
     RelativeLayout rlControl;
     @BindView(R.id.imgTakePicture)
     ImageView imgTakePicture;
+    @BindView(R.id.rippleBg)
+    RippleBackground rippleBg;
 
     @Override
     protected int getResourceLayout() {
@@ -57,19 +56,6 @@ public class HiddenPictureActivity extends BaseActivity implements HiddenPicture
         });
     }
 
-
-    private void startRecordBackgroundVideo(Node phoneNode, GoogleApiClient mGoogleApiClient) {
-        if (phoneNode != null && mGoogleApiClient != null) {
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedObject.START_RECORD_VIDEO_BACKGROUND, null);
-        }
-    }
-
-    private void stopRecordBackgroundVideo(Node phoneNode, GoogleApiClient mGoogleApiClient) {
-        if (phoneNode != null && mGoogleApiClient != null) {
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, phoneNode.getId(), SharedObject.STOP_RECORD_VIDEO_BACKGROUND, null);
-        }
-    }
-
     @Override
     protected void onDestroy() {
         releaseResource();
@@ -85,12 +71,20 @@ public class HiddenPictureActivity extends BaseActivity implements HiddenPicture
 
     @Override
     public void showLoading() {
-        prbLoading.setVisibility(View.VISIBLE);
+        runOnUiThread(() -> {
+            rippleBg.startRippleAnimation();
+            prbLoading.setVisibility(View.VISIBLE);
+        });
+
     }
 
     @Override
     public void hideLoading() {
-        prbLoading.setVisibility(View.GONE);
+        runOnUiThread(() -> {
+            rippleBg.stopRippleAnimation();
+            prbLoading.setVisibility(View.GONE);
+        });
+
     }
 
     @Override
