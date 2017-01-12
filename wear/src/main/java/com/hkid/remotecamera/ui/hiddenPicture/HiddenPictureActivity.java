@@ -3,8 +3,10 @@ package com.hkid.remotecamera.ui.hiddenPicture;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.data.SharedObject;
@@ -28,8 +30,14 @@ public class HiddenPictureActivity extends BaseActivity implements HiddenPicture
     ImageView imgPreview;
     @BindView(R.id.prbLoading)
     ProgressBar prbLoading;
+    @BindView(R.id.btnSwitchCamera)
+    Button btnSwitchCamera;
 
     HiddenPicturePresenter.Presenter presenter;
+    @BindView(R.id.rlControl)
+    RelativeLayout rlControl;
+    @BindView(R.id.imgTakePicture)
+    ImageView imgTakePicture;
 
     @Override
     protected int getResourceLayout() {
@@ -43,7 +51,7 @@ public class HiddenPictureActivity extends BaseActivity implements HiddenPicture
     }
 
     @Override
-    public void bindImageView(Bitmap bitmap) {
+    public void bindPreviewImageView(Bitmap bitmap) {
         runOnUiThread(() -> {
             imgPreview.setImageBitmap(bitmap);
         });
@@ -86,6 +94,16 @@ public class HiddenPictureActivity extends BaseActivity implements HiddenPicture
     }
 
     @Override
+    public void showControlView() {
+//        rlControl.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideControlView() {
+//        rlControl.setVisibility(View.GONE);
+    }
+
+    @Override
     public void showError(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
@@ -97,12 +115,34 @@ public class HiddenPictureActivity extends BaseActivity implements HiddenPicture
         ButterKnife.bind(this);
     }
 
-    @OnClick({R.id.btnSwitchCamera})
+    @OnClick({R.id.btnSwitchCamera, R.id.btnTakePicture})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnSwitchCamera:
                 presenter.performSwitchCamera();
                 break;
+            case R.id.btnTakePicture:
+                presenter.performTakePicture();
+                break;
         }
+    }
+
+    @Override
+    public void bindTakePictureImageView(Bitmap bitmap) {
+        runOnUiThread(() -> {
+            imgTakePicture.setTranslationX(0);
+            imgTakePicture.setRotation(0);
+            imgTakePicture.setVisibility(View.VISIBLE);
+            imgTakePicture.setImageBitmap(bitmap);
+            imgTakePicture.animate().translationX(imgTakePicture.getWidth())
+                    .rotation(40)
+                    .withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            imgTakePicture.setVisibility(View.GONE);
+                        }
+                    }).start();
+        });
+
     }
 }

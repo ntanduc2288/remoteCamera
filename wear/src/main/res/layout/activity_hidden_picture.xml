@@ -13,6 +13,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <ImageView
+            android:id="@+id/imgTakePicture"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <ProgressBar
             android:id="@+id/prbLoading"
             android:layout_width="20dp"
@@ -20,14 +25,31 @@
             android:layout_centerInParent="true"
             android:layout_gravity="center" />
 
-        <Button
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="10dp"
-            android:id="@+id/btnSwitchCamera"
-            android:background="@drawable/switch_camera_icon"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/rlControl">
+            <Button
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/btnSwitchCamera"
+                android:background="@drawable/switch_camera_icon"/>
+
+            <Button
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/btnTakePicture"
+                android:background="@drawable/switch_camera_icon"/>
+        </RelativeLayout>
+
+
     </RelativeLayout>
 
 

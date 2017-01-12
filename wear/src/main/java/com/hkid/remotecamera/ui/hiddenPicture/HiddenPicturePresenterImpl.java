@@ -42,6 +42,7 @@ public class HiddenPicturePresenterImpl implements HiddenPicturePresenter.Presen
     @Override
     public void performPreviewPicture(Context context) {
         view.showLoading();
+        view.hideControlView();
         initGoogleApiClient(context)
                 .doOnNext(googleApiClient -> Wearable.MessageApi.addListener(googleApiClient, messageListener))
                 .flatMap(googleApiClient -> findPhoneNode(googleApiClient))
@@ -130,13 +131,28 @@ public class HiddenPicturePresenterImpl implements HiddenPicturePresenter.Presen
     }
 
     @Override
+    public void takePicture() {
+        if (mNote != null && mGoogleApiClient != null) {
+            SharedObject takePictureObject = new SharedObject();
+            takePictureObject.setCommand(SharedObject.COMMAND.TAKE_PICTURE);
+            String obTmp = gson.toJson(takePictureObject);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), obTmp, null);
+        }
+    }
+
+    @Override
     public void onMessageResult(MessageEvent messageEvents) {
         String path = messageEvents.getPath();
         if (path.equals(SharedObject.START_PREVIEW_CAMERA_BACKGROUND)) {
             byte[] data = messageEvents.getData();
             Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-            view.bindImageView(bitmap);
+            view.bindPreviewImageView(bitmap);
             view.hideLoading();
+            view.showControlView();
+        }else if(path.equals(SharedObject.TAKE_PICTURE)){
+            byte[] data = messageEvents.getData();
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            view.bindTakePictureImageView(bitmap);
         }
     }
 
@@ -158,5 +174,10 @@ public class HiddenPicturePresenterImpl implements HiddenPicturePresenter.Presen
         stopPreviewBackground();
         switchToFrontCamera = !switchToFrontCamera;
         startPreviewBackground(switchToFrontCamera);
+    }
+
+    @Override
+    public void performTakePicture() {
+        takePicture();
     }
 }

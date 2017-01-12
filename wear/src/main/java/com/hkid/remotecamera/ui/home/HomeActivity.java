@@ -3,13 +3,15 @@ package com.hkid.remotecamera.ui.home;
 import android.content.Intent;
 import android.support.wearable.view.WearableListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.hkid.remotecamera.R;
 import com.hkid.remotecamera.adapter.WearableAdapter;
 import com.hkid.remotecamera.object.ModeObject;
 import com.hkid.remotecamera.ui.BaseActivity;
 import com.hkid.remotecamera.ui.hiddenPicture.HiddenPictureActivity;
+import com.hkid.remotecamera.ui.hiddenVideo.HiddenVideoActivity;
+import com.hkid.remotecamera.ui.previewCamera.PreviewCameraActivity;
+import com.hkid.remotecamera.ui.recordAudio.RecordAudioActivity;
 
 import java.util.ArrayList;
 
@@ -121,16 +123,19 @@ public class HomeActivity extends BaseActivity implements HomePresenter.View {
 
     @Override
     public void openHiddenVideoView() {
-        Toast.makeText(this, "openHiddenVideoView", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, HiddenVideoActivity.class);
+        startActivity(intent);
     }
 
     @Override
     public void openRecordAudioView() {
-        Toast.makeText(this, "openRecordAudioView", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, RecordAudioActivity.class);
+        startActivity(intent);
     }
 
     @Override
     public void openPreviewCameraView() {
-        Toast.makeText(this, "openPreviewCameraView", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, PreviewCameraActivity.class);
+        startActivity(intent);
     }
 }

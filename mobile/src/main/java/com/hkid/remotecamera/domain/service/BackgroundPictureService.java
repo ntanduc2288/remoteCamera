@@ -37,6 +37,7 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
+import com.google.gson.Gson;
 import com.hkid.remotecamera.util.Constants;
 
 import java.io.ByteArrayOutputStream;
@@ -44,6 +45,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 import static com.hkid.remotecamera.presenter.splash.SplashActivity.mPreviewRunning;
@@ -81,6 +83,7 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
     private GoogleApiClient mGoogleApiClient;
     private String TAG = BackgroundPictureService.class.getSimpleName();
     private boolean isSwitchToFrontCamera;
+    private Gson gson;
 
     private Camera openFrontFacingCameraGingerbread() {
         if (mCamera != null) {
@@ -430,10 +433,69 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
 
     }
 
+    public void doSnap(){
+        if(mCamera == null || !mPreviewRunning) {
+            Log.d(TAG, "tried to snap when camera was inactive");
+            return;
+        }
+        Camera.Parameters params = mCamera.getParameters();
+        List<Camera.Size> sizes = params.getSupportedPictureSizes();
+        Camera.Size size = sizes.get(0);
+        for (int i = 0; i < sizes.size(); i++) {
+            if (sizes.get(i).width > size.width)
+                size = sizes.get(i);
+        }
+        params.setPictureSize(size.width, size.height);
+        mCamera.setParameters(params);
+        Camera.PictureCallback jpegCallback = (data, camera) -> {
+            notifyScanMedia(data);
+            sendToWearable(SharedObject.TAKE_PICTURE, reduceByteArray(data), null);
+            mCamera.startPreview();
+        };
+        mCamera.takePicture(null, null, jpegCallback);
+    }
+
+    private byte[] reduceByteArray(byte[] data){
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inSampleSize = 4;
+        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length, opts);
+        int smallWidth, smallHeight;
+        int dimension = 280;
+        if(bmp.getWidth() > bmp.getHeight()) {
+            smallWidth = dimension;
+            smallHeight = dimension*bmp.getHeight()/bmp.getWidth();
+        } else {
+            smallHeight = dimension;
+            smallWidth = dimension*bmp.getWidth()/bmp.getHeight();
+        }
+        Bitmap bmpSmall = Bitmap.createScaledBitmap(bmp, smallWidth, smallHeight, false);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bmpSmall.compress(Bitmap.CompressFormat.WEBP, 50, baos);
+        return baos.toByteArray();
+    }
+
+    private void notifyScanMedia(byte[] data){
+        try{
+            FileOutputStream outStream = null;
+            String filename = String.format("/sdcard/DCIM/Camera/img_wear_%d.jpg", System.currentTimeMillis());
+            outStream = new FileOutputStream(filename);
+            outStream.write(data);
+            outStream.close();
+            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + filename)));
+        }catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // sv = new SurfaceView(getApplicationContext());
+
+        gson = new Gson();
 
         isSwitchToFrontCamera = intent.getBooleanExtra(Constants.SWITCH_CAMERA, false);
 
@@ -505,9 +567,19 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
         @Override
         public void onMessageReceived (MessageEvent m){
             Log.d(TAG, "onMessageReceived: " + m.getPath());
+            String path = m.getPath();
+
+            SharedObject sharedObject = gson.fromJson(path, SharedObject.class);
+            switch (sharedObject.getCommand()){
+                case TAKE_PICTURE:
+                    doSnap();
+                    break;
+            }
+
             long lastMessageTime = System.currentTimeMillis();
             Scanner s = new Scanner(m.getPath());
             String command = s.next();
+
 //            if(command.equals("snap")) {
 //                doSnap();
 //            } else if(command.equals("switch")) {
@@ -679,6 +751,8 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
 
                         int[] rgb = decodeYUV420SP(data, previewSize.width, previewSize.height);
                         Bitmap bmp = Bitmap.createBitmap(rgb, previewSize.width, previewSize.height, Bitmap.Config.ARGB_8888);
+//                        BitmapFactory.Options options = new BitmapFactory.Options();
+//                        bmp = BitmapFactory.decodeByteArray(data, 0, data.length, options);
                         int smallWidth, smallHeight;
                         int dimension = 200;
                         // stream is lagging, cut resolution and catch up
@@ -700,7 +774,6 @@ public class BackgroundPictureService extends Service implements SurfaceHolder.C
 
                         Matrix matrix = new Matrix();
                         matrix.postRotate(mCameraOrientation);
-
                         Bitmap bmpSmall = Bitmap.createScaledBitmap(bmp, smallWidth, smallHeight, false);
                         Bitmap bmpSmallRotated = Bitmap.createBitmap(bmpSmall, 0, 0, smallWidth, smallHeight, matrix, false);
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();

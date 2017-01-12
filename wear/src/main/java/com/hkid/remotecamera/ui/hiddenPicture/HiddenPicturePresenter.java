@@ -19,8 +19,11 @@ public interface HiddenPicturePresenter {
         void releaseResource();
         void showLoading();
         void hideLoading();
+        void showControlView();
+        void hideControlView();
         void showError(String message);
-        void bindImageView(Bitmap bitmap);
+        void bindPreviewImageView(Bitmap bitmap);
+        void bindTakePictureImageView(Bitmap bitmap);
     }
 
     interface Presenter{
@@ -29,8 +32,10 @@ public interface HiddenPicturePresenter {
         Observable<Node> findPhoneNode(GoogleApiClient googleApiClient);
         void startPreviewBackground(boolean switchCamera);
         void stopPreviewBackground();
+        void takePicture();
         void onMessageResult(MessageEvent messageEvents);
         void performSwitchCamera();
+        void performTakePicture();
         void release();
     }
 }
