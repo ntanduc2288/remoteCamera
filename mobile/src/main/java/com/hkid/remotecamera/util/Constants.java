@@ -27,7 +27,6 @@ public class Constants {
     public final static String VIDEO_FOLDER = REMOTE_CAMERA_APP_FOLDER + File.separator + "Videos" + File.separator;
     public final static String AUDIO_FOLDER = REMOTE_CAMERA_APP_FOLDER + File.separator + "Audios" + File.separator;
     public final static String IMAGE_FOLDER = REMOTE_CAMERA_APP_FOLDER + File.separator + "Images" + File.separator;
-    public final static String PREFIX_VIDEO_NAME = "SafeApp_";
     public final static String VIDEO_TYPE = ".mp4";
     public final static String AUDIO_TYPE = ".3gpp";
     public final static String PREFIX_VIDEO_ID = "Video_";

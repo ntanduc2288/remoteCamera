@@ -135,7 +135,7 @@ public class BackgroundVideoRecorderService extends BaseRemoteCameraService impl
         Log.d(TAG, "surfaceCreated");
         Ulti.createFolder(Constants.VIDEO_FOLDER);
         long time = Calendar.getInstance().getTimeInMillis();
-        fileName = Constants.VIDEO_FOLDER + Constants.PREFIX_VIDEO_NAME + time + Constants.VIDEO_TYPE;
+        fileName = Constants.VIDEO_FOLDER + time + Constants.VIDEO_TYPE;
         try {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
@@ -204,10 +204,13 @@ public class BackgroundVideoRecorderService extends BaseRemoteCameraService impl
 
         try {
             if (camera != null && mediaRecorder != null) {
+                surfaceView.getHolder().removeCallback(this );
                 mediaRecorder.stop();
                 mediaRecorder.reset();
                 mediaRecorder.release();
 
+                camera.stopPreview();
+                camera.setPreviewCallback(null);
                 camera.lock();
                 camera.release();
 
