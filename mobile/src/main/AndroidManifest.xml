@@ -73,6 +73,7 @@
 
         <service android:name="com.hkid.remotecamera.domain.service.BackgroundVideoRecorderService"/>
         <service android:name=".domain.service.BackgroundPictureService"/>
+        <service android:name=".domain.service.BackgroundAudioRecordService"/>
     </application>
 
 </manifest>

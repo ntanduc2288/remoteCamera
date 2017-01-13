@@ -91,4 +91,11 @@ public class BaseRemoteCameraPresenterImpl implements BaseRemoteCameraPresenter{
             mGoogleApiClient = null;
         }
     }
+
+    protected Observable<Node> getPhoneNode(Context context){
+        return initGoogleApiClient(context)
+                .doOnNext(googleApiClient -> Wearable.MessageApi.addListener(googleApiClient, messageListener))
+                .flatMap(googleApiClient -> findPhoneNode(googleApiClient))
+                .doOnNext(node -> mNote = node);
+    }
 }

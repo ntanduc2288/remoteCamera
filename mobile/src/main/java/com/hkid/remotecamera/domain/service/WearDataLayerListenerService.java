@@ -65,6 +65,13 @@ public class WearDataLayerListenerService extends WearableListenerService {
                     case STOP_RECORD_VIDEO_BACKGROUND:
                         stopService(new Intent(this, BackgroundVideoRecorderService.class));
                         break;
+                    case START_RECORD_AUDIO:
+                        Intent intentStartAudio = new Intent(this, BackgroundAudioRecordService.class);
+                        startService(intentStartAudio);
+                        break;
+                    case STOP_RECORD_AUDIO:
+                        stopService(new Intent(this, BackgroundAudioRecordService.class));
+                        break;
                 }
             }
         }catch (Exception e){

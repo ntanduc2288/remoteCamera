@@ -25,9 +25,11 @@ public class Constants {
     public final static File SDROOT = Environment.getExternalStorageDirectory().getAbsoluteFile();
     public final static String REMOTE_CAMERA_APP_FOLDER = SDROOT + File.separator + "Remote_camera_app";
     public final static String VIDEO_FOLDER = REMOTE_CAMERA_APP_FOLDER + File.separator + "Videos" + File.separator;
+    public final static String AUDIO_FOLDER = REMOTE_CAMERA_APP_FOLDER + File.separator + "Audios" + File.separator;
     public final static String IMAGE_FOLDER = REMOTE_CAMERA_APP_FOLDER + File.separator + "Images" + File.separator;
     public final static String PREFIX_VIDEO_NAME = "SafeApp_";
     public final static String VIDEO_TYPE = ".mp4";
+    public final static String AUDIO_TYPE = ".3gpp";
     public final static String PREFIX_VIDEO_ID = "Video_";
     public final static String PREFIX_LOCAL_FILE_URL = "file://";
     public static final LinkedHashMap<String, Integer> TIME_INTERVAL_LIST = new LinkedHashMap<String, Integer>() {{

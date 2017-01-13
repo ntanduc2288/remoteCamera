@@ -31,10 +31,21 @@ public class HiddenPicturePresenterImpl extends BaseRemoteCameraPresenterImpl im
     public void performPreviewPicture(Context context) {
         view.showLoading();
         view.hideControlView();
-        initGoogleApiClient(context)
-                .doOnNext(googleApiClient -> Wearable.MessageApi.addListener(googleApiClient, messageListener))
-                .flatMap(googleApiClient -> findPhoneNode(googleApiClient))
-                .doOnNext(node -> mNote = node)
+//        initGoogleApiClient(context)
+//                .doOnNext(googleApiClient -> Wearable.MessageApi.addListener(googleApiClient, messageListener))
+//                .flatMap(googleApiClient -> findPhoneNode(googleApiClient))
+//                .doOnNext(node -> mNote = node)
+//                .subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(node -> {
+//                    stopPreviewBackground();
+//                    startPreviewBackground(switchToFrontCamera);
+//                }, throwable -> {
+//                    view.hideLoading();
+//                    view.showError(throwable.getMessage());
+//                });
+
+        getPhoneNode(context)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(node -> {

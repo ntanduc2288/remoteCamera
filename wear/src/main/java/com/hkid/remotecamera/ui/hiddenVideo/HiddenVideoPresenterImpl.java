@@ -29,10 +29,19 @@ public class HiddenVideoPresenterImpl extends BaseRemoteCameraPresenterImpl impl
     @Override
     public void initPhoneNode(Context context) {
         view.showLoading();
-        initGoogleApiClient(context)
-                .doOnNext(googleApiClient -> Wearable.MessageApi.addListener(googleApiClient, messageListener))
-                .flatMap(googleApiClient -> findPhoneNode(googleApiClient))
-                .doOnNext(node -> mNote = node)
+//        initGoogleApiClient(context)
+//                .doOnNext(googleApiClient -> Wearable.MessageApi.addListener(googleApiClient, messageListener))
+//                .flatMap(googleApiClient -> findPhoneNode(googleApiClient))
+//                .doOnNext(node -> mNote = node)
+//                .subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(node -> {
+//                    view.hideLoading();
+//                }, throwable -> {
+//                    view.hideLoading();
+//                    view.showMessage(throwable.getMessage());
+//                });
+        getPhoneNode(context)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(node -> {

@@ -111,6 +111,7 @@ public abstract class BaseRemoteCameraService extends Service {
         nodes.setResultCallback(result -> {
             if(result.getNodes().size()>0) {
                 mWearableNode = result.getNodes().get(0);
+                readyToRun();
                 Log.d(TAG, "Found wearable: name=" + mWearableNode.getDisplayName() + ", id=" + mWearableNode.getId());
             } else {
                 mWearableNode = null;
@@ -122,5 +123,9 @@ public abstract class BaseRemoteCameraService extends Service {
     public void onDestroy() {
         Wearable.MessageApi.removeListener(mGoogleApiClient, mMessageListener);
         super.onDestroy();
+    }
+
+    protected void readyToRun(){
+
     }
 }
