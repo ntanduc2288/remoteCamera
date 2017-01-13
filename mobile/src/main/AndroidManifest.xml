@@ -65,6 +65,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".presenter.cameraPreview.CameraPreviewActivity"
+            />
+
         <service android:name="com.hkid.remotecamera.domain.service.WearDataLayerListenerService">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />

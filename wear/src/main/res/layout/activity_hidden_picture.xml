@@ -2,67 +2,9 @@
 <android.support.wearable.view.BoxInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ImageView
-            android:id="@+id/imgPreview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <ImageView
-            android:id="@+id/imgTakePicture"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <ProgressBar
-            android:id="@+id/prbLoading"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_centerInParent="true"
-            android:layout_gravity="center" />
-
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/rlControl">
-            <Button
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="10dp"
-                android:id="@+id/btnSwitchCamera"
-                android:background="@drawable/rear_camera_icon"/>
-
-            <Button
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"
-                android:id="@+id/btnTakePicture"
-                android:background="@drawable/take_picture_icon"/>
-        </RelativeLayout>
-
-        <com.skyfishjy.library.RippleBackground
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/rippleBg"
-            app:rb_color="@color/blue"
-            app:rb_radius="32dp"
-            app:rb_duration="3000"
-            app:rb_scale="6"
-            app:rb_rippleAmount="4">
-        </com.skyfishjy.library.RippleBackground>
-
-
-    </RelativeLayout>
+    <include layout="@layout/preview_container"/>
 
 
 </android.support.wearable.view.BoxInsetLayout>

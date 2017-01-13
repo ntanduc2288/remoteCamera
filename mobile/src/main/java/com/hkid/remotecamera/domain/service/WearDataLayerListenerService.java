@@ -9,6 +9,7 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.WearableListenerService;
 import com.google.gson.Gson;
+import com.hkid.remotecamera.presenter.cameraPreview.CameraPreviewActivity;
 import com.hkid.remotecamera.util.Constants;
 
 /**
@@ -71,6 +72,11 @@ public class WearDataLayerListenerService extends WearableListenerService {
                         break;
                     case STOP_RECORD_AUDIO:
                         stopService(new Intent(this, BackgroundAudioRecordService.class));
+                        break;
+                    case START_PREVIEW_CAMERA_FOREGROUND:
+                        Intent startIntent = new Intent(this, CameraPreviewActivity.class);
+                        startIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(startIntent);
                         break;
                 }
             }
