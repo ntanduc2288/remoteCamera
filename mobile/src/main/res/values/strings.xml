@@ -3,4 +3,10 @@
     <string name="take_picture">Take picture</string>
     <string name="request_permission">This sample needs camera permission.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="upload">Upload</string>
+    <string name="delete">Delete</string>
+    <string name="delete_multiple_files_title">Delete %d files?</string>
+    <string name="delete_one_file_title">Delete %d file?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

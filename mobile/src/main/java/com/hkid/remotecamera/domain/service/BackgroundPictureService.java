@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -185,7 +184,7 @@ public class BackgroundPictureService extends BaseRemoteCameraService implements
         params.setPictureSize(size.width, size.height);
         mCamera.setParameters(params);
         Camera.PictureCallback jpegCallback = (data, camera) -> {
-            notifyScanMedia(data);
+            saveMediaToLocal(data);
             sendToWearable(SharedObject.TAKE_PICTURE, reduceByteArray(data), null);
             mCamera.startPreview();
         };
@@ -211,14 +210,14 @@ public class BackgroundPictureService extends BaseRemoteCameraService implements
         return baos.toByteArray();
     }
 
-    private void notifyScanMedia(byte[] data) {
+    private void saveMediaToLocal(byte[] data) {
         try {
             FileOutputStream outStream = null;
             String filename = String.format(Constants.IMAGE_FOLDER + "img_wear_%d.jpg", System.currentTimeMillis());
             outStream = new FileOutputStream(filename);
             outStream.write(data);
             outStream.close();
-            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + filename)));
+//            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + filename)));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

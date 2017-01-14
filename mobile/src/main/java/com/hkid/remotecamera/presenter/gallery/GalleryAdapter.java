@@ -34,6 +34,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     public interface GalleryItemSelectedListener{
         void selectedItem(ImageItem imageItem);
         void onLongClickItem(ImageItem imageItem);
+        void hasNoSelectedItem();
     }
 
     public GalleryAdapter(Context context, GalleryItemSelectedListener galleryItemSelectedListener) {
@@ -81,7 +82,21 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             if(itemSelectedListener != null){
                 if(isEditing){
                     item.setSelected(!item.isSelected());
-                    notifyDataSetChanged();
+
+                    boolean hasSelectedItem = false;
+                    for(ImageItem imageItem : data){
+                        if(imageItem.isSelected()){
+                            hasSelectedItem = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasSelectedItem){
+                        itemSelectedListener.hasNoSelectedItem();
+                    }else {
+                        notifyDataSetChanged();
+                    }
+
                 }else {
                     itemSelectedListener.selectedItem(item);
                 }

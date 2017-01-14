@@ -12,6 +12,7 @@ import java.util.ArrayList;
  */
 public interface GalleryPresenter {
     interface View {
+        void finishRefresh();
         void initOptionMenuDialog();
         void openTakePhotoView();
         void openStreamView();

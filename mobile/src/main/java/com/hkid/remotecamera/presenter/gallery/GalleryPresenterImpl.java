@@ -42,6 +42,7 @@ public class GalleryPresenterImpl implements GalleryPresenter.Presenter {
         ArrayList<ImageItem> imageItems = getAllItemsData();
         view.bindMediaOnView(imageItems);
         view.changeToEditingMode(false);
+        view.finishRefresh();
     }
 
     @Override

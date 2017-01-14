@@ -1,17 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
-
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recylerViewGallery"
+    <RelativeLayout
+        android:id="@+id/rlTopBar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-         />
+        android:layout_height="@dimen/topbar_height"
+        android:background="@color/colorPrimary">
 
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="My Contents"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+        <RelativeLayout
+            android:id="@+id/rlOptionMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:visibility="visible">
+
+            <View
+                android:layout_width="10dp"
+                android:layout_height="30dp"
+                android:background="@drawable/three_dot_icon"
+                android:padding="20dp" />
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipeRefreshview"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/rlTopBar"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recylerViewGallery"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+             />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>
+

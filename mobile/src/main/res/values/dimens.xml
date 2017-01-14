@@ -4,4 +4,36 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="topbar_height">50dp</dimen>
     <dimen name="space_items">3dp</dimen>
+
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="title_size">20sp</dimen>
+    <dimen name="camera_icon_size">70dp</dimen>
+    <dimen name="menu_icon_size">35dp</dimen>
+    <dimen name="close_icon_size">35dp</dimen>
+    <dimen name="preview_icon_size">50dp</dimen>
+    <dimen name="share_icon_size">25dp</dimen>
+    <dimen name="delete_icon_size">25dp</dimen>
+    <dimen name="play_icon_size">70dp</dimen>
+    <dimen name="media_control_margin">20dp</dimen>
+    <dimen name="media_control_play_icon_height">35dp</dimen>
+    <dimen name="media_control_play_icon_width">30dp</dimen>
+    <dimen name="setting_item_height">50dp</dimen>
+    <dimen name="content_text_size">17sp</dimen>
+    <dimen name="checked_padding">10dp</dimen>
+    <dimen name="dialog_rounded_radius_corner">5dp</dimen>
+    <dimen name="dialog_row_height">46dp</dimen>
+    <dimen name="dialog_row_height_big">90dp</dimen>
+    <dimen name="dialog_row_padding">10dp</dimen>
+    <dimen name="capture_icon_size">70dp</dimen>
+    <dimen name="recording_info_bar_height">25dp</dimen>
+    <dimen name="height_of_separate_view">0.5dp</dimen>
+    <dimen name="menu_height">20dp</dimen>
+    <dimen name="fly_menu_main_icon_size">70dp</dimen>
+    <dimen name="fly_menu_icon_width">40dp</dimen>
+    <dimen name="fly_menu_icon_height">30dp</dimen>
+    <dimen name="fly_menu_video_icon_width">40dp</dimen>
+    <dimen name="fly_menu_video_icon_height">25dp</dimen>
+    <dimen name="layout_child_offset_path">150dp</dimen>
+    <dimen name="layout_radius_path">200dp</dimen>
+    <dimen name="layout_width_popup_menu">150dp</dimen>
 </resources>
