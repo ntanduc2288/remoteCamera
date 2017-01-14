@@ -28,6 +28,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
+import com.hkid.remotecamera.util.Constants;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -213,7 +214,7 @@ public class BackgroundPictureService extends BaseRemoteCameraService implements
     private void notifyScanMedia(byte[] data) {
         try {
             FileOutputStream outStream = null;
-            String filename = String.format("/sdcard/DCIM/Camera/img_wear_%d.jpg", System.currentTimeMillis());
+            String filename = String.format(Constants.IMAGE_FOLDER + "img_wear_%d.jpg", System.currentTimeMillis());
             outStream = new FileOutputStream(filename);
             outStream.write(data);
             outStream.close();

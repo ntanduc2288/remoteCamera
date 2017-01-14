@@ -59,4 +59,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
     compile project(':sharecode')
     compile 'com.android.support:recyclerview-v7:25.1.0'
+    //Image loader library
+    compile 'com.github.bumptech.glide:glide:3.7.0'
 }

@@ -1,81 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     >
 
-    <!--<android.support.design.widget.AppBarLayout
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recylerViewGallery"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="0dp"
-        >
+        android:layout_height="match_parent"
+         />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/topbar_height"
-            android:background="@color/colorPrimary">
-
-            <android.support.v7.widget.AppCompatButton
-                android:id="@+id/btn_settings"
-                android:layout_width="24dp"
-                android:layout_height="@dimen/menu_height"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:background="@drawable/menu_icon"
-                android:scaleType="center" />
-
-            <android.support.v7.widget.AppCompatTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="@string/my_content"
-                android:textColor="@color/white"
-                android:textSize="@dimen/title_size" />
-
-            <android.support.v7.widget.AppCompatButton
-                android:id="@+id/btn_delete"
-                android:layout_width="24dp"
-                android:layout_height="@dimen/menu_height"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/delete_icon"
-                android:scaleType="center"
-                android:visibility="gone" />
-
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:gravity="center"
-                android:id="@+id/rlOptionMenu"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:visibility="visible"
-                android:layout_marginRight="10dp"
-                android:layout_centerVertical="true"
-                >
-
-                <View
-                    android:layout_width="10dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/three_dot_icon"
-                    android:padding="20dp" />
-
-            </RelativeLayout>
-
-
-        </RelativeLayout>
-    </android.support.design.widget.AppBarLayout>-->
-
-    <!--<android.support.v7.widget.RecyclerView-->
-        <!--android:id="@+id/recylerViewGallery"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--app:layout_behavior="@string/appbar_scrolling_view_behavior" />-->
-
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>
