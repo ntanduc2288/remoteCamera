@@ -1,42 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.wearable.view.BoxInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-    
-    <RelativeLayout
+    android:layout_height="match_parent">
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="bottom"
+        sothree:umanoPanelHeight="0dp"
+        sothree:umanoShadowHeight="4dp"
         >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="Audio recording..."
-            android:visibility="gone"
-            android:id="@+id/lblRecordingStatus"
-            android:layout_above="@+id/btnRecord"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
 
-        <Button
-            android:layout_marginTop="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawablePadding="10dp"
-            android:textAllCaps="false"
-            android:layout_centerInParent="true"
-            android:id="@+id/btnRecord"
-            android:drawableLeft="@drawable/start_icon"
-            android:text="Start"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="Audio recording..."
+                android:visibility="gone"
+                android:id="@+id/lblRecordingStatus"
+                android:layout_above="@+id/btnRecord"/>
 
-        <ProgressBar
-            android:id="@+id/prbLoading"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_centerInParent="true"
-            android:layout_gravity="center" />
+            <Button
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="10dp"
+                android:textAllCaps="false"
+                android:layout_centerInParent="true"
+                android:id="@+id/btnRecord"
+                android:drawableLeft="@drawable/start_icon"
+                android:text="Start"/>
 
-    </RelativeLayout>
+            <ProgressBar
+                android:id="@+id/prbLoading"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center" />
+
+        </RelativeLayout>
+
+        <include layout="@layout/error_layout"/>
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
 </android.support.wearable.view.BoxInsetLayout>

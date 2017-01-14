@@ -5,10 +5,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.hkid.remotecamera.R;
 import com.hkid.remotecamera.ui.BaseActivity;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,6 +30,8 @@ public class RecordAudioActivity extends BaseActivity implements RecordAudioPres
     RecordAudioPresenter.Presenter presenter;
     @BindView(R.id.prbLoading)
     ProgressBar prbLoading;
+    @BindView(R.id.sliding_layout)
+    SlidingUpPanelLayout slidingLayout;
 
     @Override
     protected int getResourceLayout() {
@@ -62,7 +64,11 @@ public class RecordAudioActivity extends BaseActivity implements RecordAudioPres
 
     @Override
     public void showMessage(String message) {
-        runOnUiThread(() -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show());
+//        runOnUiThread(() -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show());
+        runOnUiThread(() -> {
+            showSlideError(slidingLayout, message);
+        });
+
     }
 
     @Override
@@ -87,7 +93,9 @@ public class RecordAudioActivity extends BaseActivity implements RecordAudioPres
 
     @OnClick(R.id.btnRecord)
     public void onClick() {
+
         presenter.performRecordAudio();
+
     }
 
     @Override

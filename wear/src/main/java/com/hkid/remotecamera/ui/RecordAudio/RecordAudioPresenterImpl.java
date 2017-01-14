@@ -36,23 +36,11 @@ public class RecordAudioPresenterImpl extends BaseRemoteCameraPresenterImpl impl
                     view.hideLoading();
                     view.showMessage(throwable.getMessage());
                 });
-//        initGoogleApiClient(context)
-//                .doOnNext(googleApiClient -> Wearable.MessageApi.addListener(googleApiClient, messageListener))
-//                .flatMap(googleApiClient -> findPhoneNode(googleApiClient))
-//                .doOnNext(node -> mNote = node)
-//                .subscribeOn(Schedulers.newThread())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(node -> {
-//                    view.hideLoading();
-//                }, throwable -> {
-//                    view.hideLoading();
-//                    view.showMessage(throwable.getMessage());
-//                });
     }
 
     @Override
     public void performRecordAudio() {
-        if (mNote != null && mGoogleApiClient != null) {
+        if (mNode != null && mGoogleApiClient != null) {
             // Stop recording first
             stopRecordAudio();
 
@@ -86,19 +74,23 @@ public class RecordAudioPresenterImpl extends BaseRemoteCameraPresenterImpl impl
 
     @Override
     public void startRecordAudio() {
-        SharedObject sharedObject = new SharedObject();
-        sharedObject.setCommand(SharedObject.COMMAND.START_RECORD_AUDIO);
-        String obTmp = gson.toJson(sharedObject);
-        //Stop recording first
-        Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), obTmp, null);
+        if(mGoogleApiClient != null && mNode != null){
+            SharedObject sharedObject = new SharedObject();
+            sharedObject.setCommand(SharedObject.COMMAND.START_RECORD_AUDIO);
+            String obTmp = gson.toJson(sharedObject);
+            //Stop recording first
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode.getId(), obTmp, null);
+        }
     }
 
     @Override
     public void stopRecordAudio() {
-        SharedObject sharedObject = new SharedObject();
-        sharedObject.setCommand(SharedObject.COMMAND.STOP_RECORD_AUDIO);
-        String obTmp = gson.toJson(sharedObject);
-        Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), obTmp, null);
+        if(mGoogleApiClient != null && mNode != null){
+            SharedObject sharedObject = new SharedObject();
+            sharedObject.setCommand(SharedObject.COMMAND.STOP_RECORD_AUDIO);
+            String obTmp = gson.toJson(sharedObject);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode.getId(), obTmp, null);
+        }
     }
 
     @Override

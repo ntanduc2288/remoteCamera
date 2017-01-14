@@ -32,7 +32,7 @@ public class HiddenVideoPresenterImpl extends BaseRemoteCameraPresenterImpl impl
 //        initGoogleApiClient(context)
 //                .doOnNext(googleApiClient -> Wearable.MessageApi.addListener(googleApiClient, messageListener))
 //                .flatMap(googleApiClient -> findPhoneNode(googleApiClient))
-//                .doOnNext(node -> mNote = node)
+//                .doOnNext(node -> mNode = node)
 //                .subscribeOn(Schedulers.newThread())
 //                .observeOn(AndroidSchedulers.mainThread())
 //                .subscribe(node -> {
@@ -59,19 +59,19 @@ public class HiddenVideoPresenterImpl extends BaseRemoteCameraPresenterImpl impl
 
     @Override
     public void performRecordVideo() {
-        if (mNote != null && mGoogleApiClient != null) {
+        if (mNode != null && mGoogleApiClient != null) {
             SharedObject sharedObject = new SharedObject();
             sharedObject.setCommand(SharedObject.COMMAND.STOP_RECORD_VIDEO_BACKGROUND);
             String obTmp = gson.toJson(sharedObject);
             //Stop recording first
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), obTmp, null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode.getId(), obTmp, null);
 
             //Check to start/stop recording
             SharedObject.COMMAND command = (isRecodingVideo == true) ? SharedObject.COMMAND.STOP_RECORD_VIDEO_BACKGROUND : SharedObject.COMMAND.START_RECORD_VIDEO_BACKGROUND;
             sharedObject.setCommand(command);
             sharedObject.setSwitchToFrontCamera(isSwitchToFrontCamera);
             obTmp = gson.toJson(sharedObject);
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), obTmp, null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode.getId(), obTmp, null);
         }
     }
 
@@ -102,22 +102,22 @@ public class HiddenVideoPresenterImpl extends BaseRemoteCameraPresenterImpl impl
     @Override
     public Observable<Node> connectToNode(Node node) {
         return Observable.create(subscriber -> {
-            if (mNote != null && mGoogleApiClient != null) {
+            if (mNode != null && mGoogleApiClient != null) {
                 SharedObject sharedObject = new SharedObject();
                 sharedObject.setCommand(SharedObject.COMMAND.TAKE_PICTURE);
                 String obTmp = gson.toJson(sharedObject);
-                Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), obTmp, null);
+                Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode.getId(), obTmp, null);
             }
         });
     }
 
     @Override
     public void stopRecordVideo() {
-        if (mNote != null && mGoogleApiClient != null) {
+        if (mNode != null && mGoogleApiClient != null) {
             SharedObject sharedObject = new SharedObject();
             sharedObject.setCommand(SharedObject.COMMAND.STOP_RECORD_VIDEO_BACKGROUND);
             String obTmp = gson.toJson(sharedObject);
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), obTmp, null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode.getId(), obTmp, null);
         }
     }
 

@@ -46,7 +46,7 @@ public class PreviewCameraPresenterImpl extends BaseRemoteCameraPresenterImpl im
 
     @Override
     public void startPreviewBackground(boolean switchToFrontCamera) {
-        if (mNote != null && mGoogleApiClient != null) {
+        if (mNode != null && mGoogleApiClient != null) {
 
             SharedObject sharedHiddenPictureObject = new SharedObject();
             sharedHiddenPictureObject.setCommand(SharedObject.COMMAND.START_PREVIEW_CAMERA_FOREGROUND);
@@ -54,38 +54,38 @@ public class PreviewCameraPresenterImpl extends BaseRemoteCameraPresenterImpl im
 
 
             String obTmp = gson.toJson(sharedHiddenPictureObject);
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), obTmp, null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode.getId(), obTmp, null);
         }
     }
 
     private void switchCamera(boolean isSwitchToFrontCamera){
-        if (mNote != null && mGoogleApiClient != null) {
+        if (mNode != null && mGoogleApiClient != null) {
 
             SharedObject sharedHiddenPictureObject = new SharedObject();
             sharedHiddenPictureObject.setCommand(SharedObject.COMMAND.SWITCH_CAMERA);
             sharedHiddenPictureObject.setSwitchToFrontCamera(isSwitchToFrontCamera);
             String obTmp = gson.toJson(sharedHiddenPictureObject);
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), obTmp, null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode.getId(), obTmp, null);
         }
     }
 
     @Override
     public void stopPreviewBackground() {
-        if (mNote != null && mGoogleApiClient != null) {
+        if (mNode != null && mGoogleApiClient != null) {
             SharedObject sharedHiddenPictureObject = new SharedObject();
             sharedHiddenPictureObject.setCommand(SharedObject.COMMAND.STOP_PREVIEW_CAMERA_FOREGROUND);
             String obTmp = gson.toJson(sharedHiddenPictureObject);
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), obTmp, null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode.getId(), obTmp, null);
         }
     }
 
     @Override
     public void takePicture() {
-        if (mNote != null && mGoogleApiClient != null) {
+        if (mNode != null && mGoogleApiClient != null) {
             SharedObject takePictureObject = new SharedObject();
             takePictureObject.setCommand(SharedObject.COMMAND.TAKE_PICTURE);
             String obTmp = gson.toJson(takePictureObject);
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNote.getId(), obTmp, null);
+            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode.getId(), obTmp, null);
         }
     }
 

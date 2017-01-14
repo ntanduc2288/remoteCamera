@@ -58,4 +58,5 @@ dependencies {
     compile 'io.reactivex:rxjava:1.0.14'
     compile 'com.google.code.gson:gson:2.2.4'
     compile project(':sharecode')
+    compile 'com.android.support:recyclerview-v7:25.1.0'
 }

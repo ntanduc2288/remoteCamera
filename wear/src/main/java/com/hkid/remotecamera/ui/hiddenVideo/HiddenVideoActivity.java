@@ -8,11 +8,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.hkid.remotecamera.R;
 import com.hkid.remotecamera.ui.BaseActivity;
 import com.skyfishjy.library.RippleBackground;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,6 +38,8 @@ public class HiddenVideoActivity extends BaseActivity implements HiddenVideoPres
     HiddenVideoPresenter.Presenter presenter;
     @BindView(R.id.lblRecordingStatus)
     TextView lblRecordingStatus;
+    @BindView(R.id.sliding_layout)
+    SlidingUpPanelLayout slidingLayout;
 
     @Override
     protected int getResourceLayout() {
@@ -55,6 +57,7 @@ public class HiddenVideoActivity extends BaseActivity implements HiddenVideoPres
                 presenter.performSwitchCamera(isChecked);
             }
         });
+
     }
 
     @Override
@@ -70,7 +73,7 @@ public class HiddenVideoActivity extends BaseActivity implements HiddenVideoPres
 
     @Override
     public void showMessage(String message) {
-        runOnUiThread(() -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show());
+        runOnUiThread(() -> showSlideError(slidingLayout, message));
     }
 
     @Override

@@ -117,25 +117,27 @@ public class HomeActivity extends BaseActivity implements HomePresenter.View {
 
     @Override
     public void openHiddenPictureView() {
-        Intent intent = new Intent(this, HiddenPictureActivity.class);
-        startActivity(intent);
+        openActivity(HiddenPictureActivity.class);
     }
 
     @Override
     public void openHiddenVideoView() {
-        Intent intent = new Intent(this, HiddenVideoActivity.class);
-        startActivity(intent);
+        openActivity(HiddenVideoActivity.class);
     }
 
     @Override
     public void openRecordAudioView() {
-        Intent intent = new Intent(this, RecordAudioActivity.class);
-        startActivity(intent);
+        openActivity(RecordAudioActivity.class);
     }
 
     @Override
     public void openPreviewCameraView() {
-        Intent intent = new Intent(this, PreviewCameraActivity.class);
+        openActivity(PreviewCameraActivity.class);
+    }
+
+    private void openActivity(Class aClass){
+        Intent intent = new Intent(this, aClass);
         startActivity(intent);
+        overridePendingTransition(R.anim.slide_right_to_left, R.anim.fade_out);
     }
 }

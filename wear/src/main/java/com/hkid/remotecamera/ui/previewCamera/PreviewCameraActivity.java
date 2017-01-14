@@ -7,11 +7,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.hkid.remotecamera.R;
 import com.hkid.remotecamera.ui.BaseActivity;
 import com.skyfishjy.library.RippleBackground;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,6 +38,8 @@ public class PreviewCameraActivity extends BaseActivity implements PreviewCamera
     ImageView imgTakePicture;
     @BindView(R.id.rippleBg)
     RippleBackground rippleBg;
+    @BindView(R.id.sliding_layout)
+    SlidingUpPanelLayout slidingLayout;
 
     @Override
     protected int getResourceLayout() {
@@ -100,7 +102,7 @@ public class PreviewCameraActivity extends BaseActivity implements PreviewCamera
 
     @Override
     public void showError(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        runOnUiThread(() -> showSlideError(slidingLayout, message));
     }
 
     @Override

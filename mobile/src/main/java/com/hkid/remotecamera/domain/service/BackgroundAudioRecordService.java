@@ -103,7 +103,8 @@ public class BackgroundAudioRecordService extends BaseRemoteCameraService {
         if(mWearableNode != null && mGoogleApiClient != null){
             SharedObject sharedObjectStopRecord = new SharedObject();
             sharedObjectStopRecord.setCommand(SharedObject.COMMAND.STOP_RECORD_AUDIO);
-            sharedObjectStopRecord.setMessage(fileName);
+            String message = "File is saved in " + fileName;
+            sharedObjectStopRecord.setMessage(message);
             String obTmp = gson.toJson(sharedObjectStopRecord);
             Wearable.MessageApi.sendMessage(mGoogleApiClient, mWearableNode.getId(), obTmp, null);
         }

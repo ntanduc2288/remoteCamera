@@ -24,7 +24,7 @@ import rx.Subscriber;
 public class BaseRemoteCameraPresenterImpl implements BaseRemoteCameraPresenter{
 
     protected GoogleApiClient mGoogleApiClient;
-    protected Node mNote;
+    protected Node mNode;
     protected MessageApi.MessageListener messageListener = messageEvent -> onMessageResult(messageEvent);
     protected Gson gson;
 
@@ -96,6 +96,6 @@ public class BaseRemoteCameraPresenterImpl implements BaseRemoteCameraPresenter{
         return initGoogleApiClient(context)
                 .doOnNext(googleApiClient -> Wearable.MessageApi.addListener(googleApiClient, messageListener))
                 .flatMap(googleApiClient -> findPhoneNode(googleApiClient))
-                .doOnNext(node -> mNote = node);
+                .doOnNext(node -> mNode = node);
     }
 }

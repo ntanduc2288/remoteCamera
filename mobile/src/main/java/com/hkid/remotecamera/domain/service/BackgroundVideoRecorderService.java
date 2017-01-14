@@ -109,7 +109,8 @@ public class BackgroundVideoRecorderService extends BaseRemoteCameraService impl
             SharedObject sharedObjectStopRecord = new SharedObject();
             sharedObjectStopRecord.setCommand(SharedObject.COMMAND.STOP_RECORD_VIDEO_BACKGROUND);
             sharedObjectStopRecord.setSwitchToFrontCamera(isSwitchToFrontCamera);
-            sharedObjectStopRecord.setMessage(fileName);
+            String message = "File is saved in " + fileName;
+            sharedObjectStopRecord.setMessage(message);
             String obTmp = gson.toJson(sharedObjectStopRecord);
             Wearable.MessageApi.sendMessage(mGoogleApiClient, mWearableNode.getId(), obTmp, null);
         }

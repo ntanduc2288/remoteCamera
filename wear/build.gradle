@@ -45,4 +45,7 @@ dependencies {
     compile project(':sharecode')
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.skyfishjy.ripplebackground:library:1.0.1'
+
+    compile 'com.sothree.slidinguppanel:library:3.3.1'
+
 }
