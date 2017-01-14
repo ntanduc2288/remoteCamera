@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.hkid.remotecamera.R;
@@ -45,6 +47,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     }
 
     public void resetToNormalMode(){
+        isEditing = false;
         for (ImageItem imageItem : data){
             imageItem.setSelected(false);
         }
@@ -63,22 +66,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         ImageItem item = data.get(position);
 
         Glide.with(context).load(item.getPath()).into(holder.imgItem);
-//        switch (item.getMediaType()){
-//            case Constants.MEDIA_TYPE_PHOTO:
-//                Glide.with(context).load(item.getPath()).into(holder.imgItem);
-//                break;
-//            case Constants.MEDIA_TYPE_VIDEO:
-//                Bitmap bm = ThumbnailUtils.createVideoThumbnail(item.getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
-////                Glide.with(context).load(bm).into(holder.imgItem);
-//                holder.imgItem.setImageBitmap(bm);
-//                break;
-//        }
-        if(item.getMediaType() == Constants.MEDIA_TYPE_PHOTO){
-
-        }
-
-        Glide.with(context).load(item.getPath()).into(holder.imgItem);
-
 
         if (isEditing) {
             holder.imgIndicator.setVisibility(View.VISIBLE);
@@ -92,21 +79,49 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         }
         holder.imgItem.setOnClickListener(view -> {
             if(itemSelectedListener != null){
-                itemSelectedListener.selectedItem(item);
+                if(isEditing){
+                    item.setSelected(!item.isSelected());
+                    notifyDataSetChanged();
+                }else {
+                    itemSelectedListener.selectedItem(item);
+                }
             }
         });
+
         holder.imgItem.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 if (!isEditing) {
                     if (itemSelectedListener != null) {
+                        isEditing = !isEditing;
                         item.setSelected(!item.isSelected());
                         itemSelectedListener.onLongClickItem(item);
+                        notifyDataSetChanged();
                     }
                 }
                 return true;
             }
         });
+
+
+        switch (item.getMediaType()){
+            case Constants.MEDIA_TYPE_PHOTO:
+                holder.lnMediaType.setVisibility(View.GONE);
+                holder.imgIconMediaType.setVisibility(View.GONE);
+                break;
+            case Constants.MEDIA_TYPE_VIDEO:
+                holder.lnMediaType.setVisibility(View.VISIBLE);
+                holder.imgIconMediaType.setVisibility(View.VISIBLE);
+                Glide.with(context).load(R.drawable.play_icon).into(holder.imgIconMediaType);
+                holder.lblTime.setText(item.getTimeDuration());
+                break;
+            case Constants.MEDIA_TYPE_AUDIO:
+                holder.lnMediaType.setVisibility(View.VISIBLE);
+                holder.imgIconMediaType.setVisibility(View.VISIBLE);
+                Glide.with(context).load(R.drawable.audio_icon).into(holder.imgIconMediaType);
+                holder.lblTime.setText(item.getTimeDuration());
+                break;
+        }
     }
 
     @Override
@@ -135,6 +150,12 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         GridViewItem imgItem;
         @BindView(R.id.indicator_icon)
         ImageView imgIndicator;
+        @BindView(R.id.imgIconMediaType)
+        ImageView imgIconMediaType;
+        @BindView(R.id.lnMediaType)
+        LinearLayout lnMediaType;
+        @BindView(R.id.lblTime)
+        TextView lblTime;
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);

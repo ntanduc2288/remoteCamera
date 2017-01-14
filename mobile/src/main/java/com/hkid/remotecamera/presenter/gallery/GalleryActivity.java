@@ -1,11 +1,15 @@
 package com.hkid.remotecamera.presenter.gallery;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 
 import com.hkid.remotecamera.R;
+import com.hkid.remotecamera.customView.SpacesItemDecoration;
 import com.hkid.remotecamera.presenter.BaseActivity;
 import com.hkid.remotecamera.presenter.objects.ImageItem;
+import com.hkid.remotecamera.util.Constants;
 
 import java.util.ArrayList;
 
@@ -30,10 +34,12 @@ public class GalleryActivity extends BaseActivity implements GalleryAdapter.Gall
 
     @Override
     protected void setupViews() {
-        galleryPresenter = new GalleryPresenterImpl(this);
+        galleryPresenter = new GalleryPresenterImpl(this, this);
         galleryAdapter = new GalleryAdapter(this, this);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         recylerViewGallery.setLayoutManager(gridLayoutManager);
+        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.space_items);
+        recylerViewGallery.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
         recylerViewGallery.setAdapter(galleryAdapter);
 
         galleryPresenter.refreshData();
@@ -48,7 +54,17 @@ public class GalleryActivity extends BaseActivity implements GalleryAdapter.Gall
 
     @Override
     public void selectedItem(ImageItem imageItem) {
-
+        switch (imageItem.getMediaType()){
+            case Constants.MEDIA_TYPE_PHOTO:
+                openPreviewPhotoView(imageItem);
+                break;
+            case Constants.MEDIA_TYPE_VIDEO:
+                openPreviewVideoView(imageItem);
+                break;
+            case Constants.MEDIA_TYPE_AUDIO:
+                openPreviewAudioView(imageItem);
+                break;
+        }
     }
 
     @Override
@@ -82,13 +98,31 @@ public class GalleryActivity extends BaseActivity implements GalleryAdapter.Gall
     }
 
     @Override
-    public void openPreviewPhotoView(int mediaType, String path) {
+    public void openPreviewPhotoView(ImageItem imageItem) {
+        Intent intent = new Intent ();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageItem.getFile());
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
+    }
+
+    @Override
+    public void openPreviewVideoView(ImageItem imageItem) {
+        Intent intent = new Intent ();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageItem.getFile());
+        intent.setDataAndType(uri, "video/*");
+        startActivity(intent);
 
     }
 
     @Override
-    public void openPreviewVideoView(int mediaType, String path) {
-
+    public void openPreviewAudioView(ImageItem imageItem) {
+        Intent intent = new Intent ();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageItem.getFile());
+        intent.setDataAndType(uri, "audio/*");
+        startActivity(intent);
     }
 
     @Override
@@ -100,7 +134,7 @@ public class GalleryActivity extends BaseActivity implements GalleryAdapter.Gall
 
     @Override
     public void changeToEditingMode(boolean editing) {
-
+        galleryAdapter.resetToNormalMode();
     }
 
     @Override
@@ -116,5 +150,15 @@ public class GalleryActivity extends BaseActivity implements GalleryAdapter.Gall
     @Override
     public void openShareDialog(ArrayList<ImageItem> selecteds) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (galleryAdapter.isEditing) {
+            // cancel delete
+            changeToEditingMode(false);
+        }  else {
+            super.onBackPressed();
+        }
     }
 }

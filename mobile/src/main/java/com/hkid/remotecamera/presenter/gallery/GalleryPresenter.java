@@ -17,8 +17,9 @@ public interface GalleryPresenter {
         void openStreamView();
         void openRecordVideoView();
         void openSettingsView();
-        void openPreviewPhotoView(int mediaType, String path);
-        void openPreviewVideoView(int mediaType, String path);
+        void openPreviewPhotoView(ImageItem imageItem);
+        void openPreviewVideoView(ImageItem imageItem);
+        void openPreviewAudioView(ImageItem imageItem);
         void bindMediaOnView(ArrayList<ImageItem> imageItems);
         void changeToEditingMode(boolean editing);
         void showOptionMenuDialog();

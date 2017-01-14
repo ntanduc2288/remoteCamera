@@ -15,6 +15,7 @@ import android.graphics.Matrix;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
@@ -39,6 +40,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by user on 4/19/15.
@@ -391,5 +393,18 @@ public class Ulti {
         values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
         values.put(MediaStore.Video.Media.DATA, videoFile.getAbsolutePath());
         return context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+    }
+
+    public static String getTimeFromMedia(Context context, File file){
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+//use one of overloaded setDataSource() functions to set your data source
+        retriever.setDataSource(context, Uri.fromFile(file));
+        String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        long millis = Long.parseLong(time );
+
+        String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
+                TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+                TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+        return hms;
     }
 }

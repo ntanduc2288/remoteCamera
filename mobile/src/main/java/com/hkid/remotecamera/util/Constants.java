@@ -41,4 +41,5 @@ public class Constants {
     public static final String SWITCH_CAMERA = "SWITCH_CAMERA";
     public final static int MEDIA_TYPE_PHOTO = 0;
     public final static int MEDIA_TYPE_VIDEO = 1;
+    public final static int MEDIA_TYPE_AUDIO = 2;
 }
