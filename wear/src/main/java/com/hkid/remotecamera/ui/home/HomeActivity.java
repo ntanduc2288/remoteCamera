@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.wearable.view.WearableListView;
 import android.widget.TextView;
 
+import com.google.android.gms.wearable.Wearable;
 import com.hkid.remotecamera.R;
 import com.hkid.remotecamera.adapter.WearableAdapter;
 import com.hkid.remotecamera.object.ModeObject;
@@ -24,6 +25,7 @@ public class HomeActivity extends BaseActivity implements HomePresenter.View {
 
     private static ArrayList<ModeObject> modes;
     private TextView lblHeader;
+    private HomePresenter.Presenter presenter;
 
     @Override
     protected int getResourceLayout() {
@@ -32,6 +34,7 @@ public class HomeActivity extends BaseActivity implements HomePresenter.View {
 
     @Override
     protected void setupViews() {
+        presenter = new HomePresenterImpl(this);
         initModes();
         // This is our list header
         lblHeader = (TextView) findViewById(R.id.lblHeader);
@@ -70,6 +73,14 @@ public class HomeActivity extends BaseActivity implements HomePresenter.View {
 
             }
         });
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.initPhoneNode(this);
     }
 
     // The following code ensures that the title scrolls as the user scrolls up
@@ -139,5 +150,10 @@ public class HomeActivity extends BaseActivity implements HomePresenter.View {
         Intent intent = new Intent(this, aClass);
         startActivity(intent);
         overridePendingTransition(R.anim.slide_right_to_left, R.anim.fade_out);
+    }
+
+    @Override
+    public void showNode(String nodeName) {
+        lblHeader.setText(nodeName);
     }
 }

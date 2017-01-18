@@ -40,7 +40,6 @@ public abstract class BaseRemoteCameraService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         gson = new Gson();
         isSwitchToFrontCamera = intent.getBooleanExtra(Constants.SWITCH_CAMERA, false);
 

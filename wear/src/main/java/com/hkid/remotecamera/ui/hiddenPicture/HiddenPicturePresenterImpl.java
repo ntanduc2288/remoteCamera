@@ -48,7 +48,7 @@ public class HiddenPicturePresenterImpl extends BaseRemoteCameraPresenterImpl im
 
     @Override
     public void startPreviewBackground(boolean switchToFrontCamera) {
-        if (mNode != null && mGoogleApiClient != null) {
+        if (phoneNode != null && googleApiClient != null) {
 
             SharedObject sharedHiddenPictureObject = new SharedObject();
             sharedHiddenPictureObject.setCommand(SharedObject.COMMAND.START_PREVIEW_CAMERA_BACKGROUND);
@@ -56,27 +56,27 @@ public class HiddenPicturePresenterImpl extends BaseRemoteCameraPresenterImpl im
 
 
             String obTmp = gson.toJson(sharedHiddenPictureObject);
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode.getId(), obTmp, null);
+            Wearable.MessageApi.sendMessage(googleApiClient, phoneNode.getId(), obTmp, null);
         }
     }
 
     @Override
     public void stopPreviewBackground() {
-        if (mNode != null && mGoogleApiClient != null) {
+        if (phoneNode != null && googleApiClient != null) {
             SharedObject sharedHiddenPictureObject = new SharedObject();
             sharedHiddenPictureObject.setCommand(SharedObject.COMMAND.STOP_PREVIEW_CAMERA_BACKGROUND);
             String obTmp = gson.toJson(sharedHiddenPictureObject);
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode.getId(), obTmp, null);
+            Wearable.MessageApi.sendMessage(googleApiClient, phoneNode.getId(), obTmp, null);
         }
     }
 
     @Override
     public void takePicture() {
-        if (mNode != null && mGoogleApiClient != null) {
+        if (phoneNode != null && googleApiClient != null) {
             SharedObject takePictureObject = new SharedObject();
             takePictureObject.setCommand(SharedObject.COMMAND.TAKE_PICTURE);
             String obTmp = gson.toJson(takePictureObject);
-            Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode.getId(), obTmp, null);
+            Wearable.MessageApi.sendMessage(googleApiClient, phoneNode.getId(), obTmp, null);
         }
     }
 
@@ -111,9 +111,9 @@ public class HiddenPicturePresenterImpl extends BaseRemoteCameraPresenterImpl im
         stopPreviewBackground();
         switchToFrontCamera = !switchToFrontCamera;
         if(switchToFrontCamera){
-            view.setBackgroundForSwitchCameraButton(R.drawable.front_camera_icon);
-        }else {
             view.setBackgroundForSwitchCameraButton(R.drawable.rear_camera_icon);
+        }else {
+            view.setBackgroundForSwitchCameraButton(R.drawable.front_camera_icon);
         }
         startPreviewBackground(switchToFrontCamera);
     }

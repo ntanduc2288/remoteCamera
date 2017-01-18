@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.data.SharedObject;
+import com.google.android.gms.wearable.Channel;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
@@ -34,6 +35,13 @@ public class WearDataLayerListenerService extends WearableListenerService {
         if(D) Log.d(TAG, "onDestroy");
         super.onDestroy();
     }
+
+    @Override
+    public void onPeerDisconnected(Node node) {
+        super.onPeerDisconnected(node);
+        Log.d(TAG, "onPeerDisconnected");
+    }
+
     @Override
     public void onPeerConnected(Node peer) {
         if(D) Log.d(TAG, "onPeerConnected");
@@ -89,5 +97,11 @@ public class WearDataLayerListenerService extends WearableListenerService {
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
         // i don't care
+    }
+
+    @Override
+    public void onChannelOpened(Channel channel) {
+        super.onChannelOpened(channel);
+        Log.d(TAG, "onChannelOpened");
     }
 }

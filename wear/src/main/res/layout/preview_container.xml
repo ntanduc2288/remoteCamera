@@ -33,7 +33,7 @@
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="10dp"
             android:id="@+id/btnSwitchCamera"
-            android:background="@drawable/rear_camera_icon"/>
+            android:background="@drawable/front_camera_icon"/>
 
         <Button
             android:layout_width="25dp"

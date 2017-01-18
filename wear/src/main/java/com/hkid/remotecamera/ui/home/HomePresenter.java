@@ -1,5 +1,8 @@
 package com.hkid.remotecamera.ui.home;
 
+import android.content.Context;
+
+
 /**
  * @author Duc Nguyen
  * @version 1.0
@@ -8,9 +11,14 @@ package com.hkid.remotecamera.ui.home;
 public interface HomePresenter {
 
     interface View{
+        void showNode(String nodeName);
         void openHiddenPictureView();
         void openHiddenVideoView();
         void openRecordAudioView();
         void openPreviewCameraView();
+    }
+
+    interface Presenter{
+        void initPhoneNode(Context context);
     }
 }

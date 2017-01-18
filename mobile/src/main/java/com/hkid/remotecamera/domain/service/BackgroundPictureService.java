@@ -4,14 +4,12 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -49,13 +47,6 @@ public class BackgroundPictureService extends BaseRemoteCameraService implements
 // a variable to control the camera
     private Camera mCamera;
     // the camera parameters
-    private Camera.Parameters parameters;
-    private Bitmap bmp;
-    FileOutputStream fo;
-    private String FLASH_MODE;
-    private int QUALITY_MODE = 0;
-    private boolean isFrontCamRequest = false;
-    private Camera.Size pictureSize;
     SurfaceView sv;
     private SurfaceHolder sHolder;
     private WindowManager windowManager;
@@ -63,111 +54,9 @@ public class BackgroundPictureService extends BaseRemoteCameraService implements
     public Intent cameraIntent;
     SharedPreferences pref;
     SharedPreferences.Editor editor;
-    int width = 0, height = 0;
     private static int currentCamera = Camera.CameraInfo.CAMERA_FACING_BACK;
     public int mCameraOrientation;
     private String TAG = BackgroundPictureService.class.getSimpleName();
-
-
-    private Camera openFrontFacingCameraGingerbread() {
-        if (mCamera != null) {
-            mCamera.stopPreview();
-            mCamera.release();
-        }
-        int cameraCount = 0;
-        Camera cam = null;
-        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-        cameraCount = Camera.getNumberOfCameras();
-        for (int camIdx = 0; camIdx < cameraCount; camIdx++) {
-            Camera.getCameraInfo(camIdx, cameraInfo);
-            if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                try {
-                    cam = Camera.open(camIdx);
-                } catch (RuntimeException e) {
-                    Log.e("Camera",
-                            "Camera failed to open: " + e.getLocalizedMessage());
-                /*
-                 * Toast.makeText(getApplicationContext(),
-                 * "Front Camera failed to open", Toast.LENGTH_LONG)
-                 * .show();
-                 */
-                }
-            }
-        }
-        return cam;
-    }
-
-    private void setBesttPictureResolution() {
-        // get biggest picture size
-        width = pref.getInt("Picture_Width", 0);
-        height = pref.getInt("Picture_height", 0);
-
-        if (width == 0 | height == 0) {
-            pictureSize = getBiggesttPictureSize(parameters);
-            if (pictureSize != null)
-                parameters
-                        .setPictureSize(pictureSize.width, pictureSize.height);
-            // save width and height in sharedprefrences
-            width = pictureSize.width;
-            height = pictureSize.height;
-            editor.putInt("Picture_Width", width);
-            editor.putInt("Picture_height", height);
-            editor.commit();
-
-        } else {
-            // if (pictureSize != null)
-            parameters.setPictureSize(width, height);
-        }
-    }
-
-    private Camera.Size getBiggesttPictureSize(Camera.Parameters parameters) {
-        Camera.Size result = null;
-
-        for (Camera.Size size : parameters.getSupportedPictureSizes()) {
-            if (result == null) {
-                result = size;
-            } else {
-                int resultArea = result.width * result.height;
-                int newArea = size.width * size.height;
-
-                if (newArea > resultArea) {
-                    result = size;
-                }
-            }
-        }
-
-        return (result);
-    }
-
-    /**
-     * Check if this device has a camera
-     */
-    private boolean checkCameraHardware(Context context) {
-        if (context.getPackageManager().hasSystemFeature(
-                PackageManager.FEATURE_CAMERA)) {
-            // this device has a camera
-            return true;
-        } else {
-            // no camera on this device
-            return false;
-        }
-    }
-
-    /**
-     * Check if this device has front camera
-     */
-    private boolean checkFrontCamera(Context context) {
-        if (context.getPackageManager().hasSystemFeature(
-                PackageManager.FEATURE_CAMERA_FRONT)) {
-            // this device has front camera
-            return true;
-        } else {
-            // no front camera on this device
-            return false;
-        }
-    }
-
-    Handler handler = new Handler();
 
     public void doSnap() {
         if (mCamera == null || !mPreviewRunning) {
