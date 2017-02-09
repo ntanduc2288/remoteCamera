@@ -329,7 +329,12 @@ public class CameraPreviewActivity extends FragmentActivity implements SurfaceHo
                     Bitmap bmpSmall = Bitmap.createScaledBitmap(bmp, smallWidth, smallHeight, false);
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bmpSmall.compress(Bitmap.CompressFormat.WEBP, 50, baos);
-                    sendToWearable("result", baos.toByteArray(), null);
+
+                    SharedObject sharedObject = new SharedObject();
+                    sharedObject.setCommand(SharedObject.COMMAND.TAKE_PICTURE);
+                    if(gson == null) gson = new Gson();
+                    String objTmp = gson.toJson(sharedObject);
+                    sendToWearable(objTmp, baos.toByteArray(), null);
                     mCamera.startPreview();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();

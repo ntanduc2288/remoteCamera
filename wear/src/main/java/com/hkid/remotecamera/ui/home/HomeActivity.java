@@ -79,7 +79,7 @@ public class HomeActivity extends BaseActivity implements HomePresenter.View {
     @Override
     protected void onResume() {
         super.onResume();
-//        presenter.initPhoneNode(this);
+        presenter.initPhoneNode(this);
     }
 
     // The following code ensures that the title scrolls as the user scrolls up
