@@ -1,5 +1,6 @@
 package com.hkid.remotecamera.ui.hiddenPicture;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.RelativeLayout;
 
 import com.hkid.remotecamera.R;
 import com.hkid.remotecamera.ui.BaseActivity;
+import com.hkid.remotecamera.ui.timer.TimerActivity;
 import com.skyfishjy.library.RippleBackground;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -39,6 +41,12 @@ public class HiddenPictureActivity extends BaseActivity implements HiddenPicture
     RippleBackground rippleBg;
     @BindView(R.id.sliding_layout)
     SlidingUpPanelLayout slidingLayout;
+    @BindView(R.id.btnTimer)
+    Button btnTimer;
+    @BindView(R.id.btnMessage)
+    Button btnMessage;
+    @BindView(R.id.btnCounter)
+    Button btnCounter;
 
     @Override
     protected int getResourceLayout() {
@@ -62,6 +70,13 @@ public class HiddenPictureActivity extends BaseActivity implements HiddenPicture
     protected void onDestroy() {
         releaseResource();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.getTimerTime();
+
     }
 
     @Override
@@ -112,7 +127,7 @@ public class HiddenPictureActivity extends BaseActivity implements HiddenPicture
         ButterKnife.bind(this);
     }
 
-    @OnClick({R.id.btnSwitchCamera, R.id.btnTakePicture})
+    @OnClick({R.id.btnSwitchCamera, R.id.btnTakePicture, R.id.btnTimer})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnSwitchCamera:
@@ -120,6 +135,9 @@ public class HiddenPictureActivity extends BaseActivity implements HiddenPicture
                 break;
             case R.id.btnTakePicture:
                 presenter.performTakePicture();
+                break;
+            case R.id.btnTimer:
+                openTimerScreen();
                 break;
         }
     }
@@ -146,5 +164,34 @@ public class HiddenPictureActivity extends BaseActivity implements HiddenPicture
     @Override
     public void setBackgroundForSwitchCameraButton(int res) {
         btnSwitchCamera.setBackgroundResource(res);
+    }
+
+    @Override
+    public void openTimerScreen() {
+        Intent intent = new Intent(this, TimerActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void updateTimer(String timer) {
+        btnTimer.setText(timer);
+    }
+
+    @Override
+    public void updateCounterView(String time) {
+        runOnUiThread(() -> btnCounter.setText(time));
+
+    }
+
+    @Override
+    public void showCounterView() {
+        runOnUiThread(() -> btnCounter.setVisibility(View.VISIBLE));
+
+    }
+
+    @Override
+    public void hideCounterView() {
+        runOnUiThread(() -> btnCounter.setVisibility(View.GONE));
+
     }
 }

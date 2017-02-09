@@ -2,4 +2,7 @@
     <string name="app_name">Remote Camera</string>
     <string name="hello_round">Hello Round World!</string>
     <string name="hello_square">Hello Square World!</string>
+    <string name="action_timer_0">Self-timer off</string>
+    <string name="action_timer_1">Self-timer 5s</string>
+    <string name="action_timer_2">Self-timer 10s</string>
 </resources>

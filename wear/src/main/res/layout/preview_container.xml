@@ -43,6 +43,18 @@
             android:layout_marginRight="10dp"
             android:id="@+id/btnTakePicture"
             android:background="@drawable/take_picture_icon"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="10dp"
+            android:id="@+id/btnTimer"
+            android:text="Timer"
+            android:textAllCaps="false"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/timer_icon"/>
     </RelativeLayout>
 
     <com.skyfishjy.library.RippleBackground
@@ -55,5 +67,14 @@
         app:rb_scale="6"
         app:rb_rippleAmount="4">
     </com.skyfishjy.library.RippleBackground>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/btnCounter"
+        android:visibility="gone"
+        android:textSize="100sp"
+        android:background="@android:color/transparent"
+        />
 
 </RelativeLayout>

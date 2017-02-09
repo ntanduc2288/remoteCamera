@@ -19,6 +19,11 @@ public interface PreviewCameraPresenter {
         void bindPreviewImageView(Bitmap bitmap);
         void bindTakePictureImageView(Bitmap bitmap);
         void setBackgroundForSwitchCameraButton(int res);
+        void openTimerScreen();
+        void updateTimer(String timer);
+        void updateCounterView(String time);
+        void showCounterView();
+        void hideCounterView();
     }
 
     interface Presenter{
@@ -29,5 +34,8 @@ public interface PreviewCameraPresenter {
         void performSwitchCamera();
         void performTakePicture();
         void release();
+        void getTimerTime();
+        void startCounter(int currentTimer);
+        void stopCounter();
     }
 }
