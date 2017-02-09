@@ -70,6 +70,7 @@ public class GalleryActivity extends BaseActivity implements GalleryAdapter.Gall
         swipeRefreshview.setOnRefreshListener(() -> {
             galleryPresenter.refreshData();
         });
+
     }
 
     @Override

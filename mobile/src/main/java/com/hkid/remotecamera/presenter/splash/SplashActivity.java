@@ -50,6 +50,9 @@ public class SplashActivity extends FragmentActivity implements SurfaceHolder.Ca
                 stopRecordingInBackgroundThread();
             }
         });
+
+
+
     }
 
 

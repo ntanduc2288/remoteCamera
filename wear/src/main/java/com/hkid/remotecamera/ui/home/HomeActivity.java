@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.wearable.view.WearableListView;
 import android.widget.TextView;
 
-import com.google.android.gms.wearable.Wearable;
 import com.hkid.remotecamera.R;
 import com.hkid.remotecamera.adapter.WearableAdapter;
 import com.hkid.remotecamera.object.ModeObject;
@@ -80,7 +79,7 @@ public class HomeActivity extends BaseActivity implements HomePresenter.View {
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.initPhoneNode(this);
+//        presenter.initPhoneNode(this);
     }
 
     // The following code ensures that the title scrolls as the user scrolls up

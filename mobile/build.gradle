@@ -57,6 +57,8 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'io.reactivex:rxandroid:1.0.1'
     compile 'io.reactivex:rxjava:1.0.14'
+    // And ProGuard rules for RxJava!
+    compile 'com.artemzin.rxjava:proguard-rules:1.2.5.1'
     compile 'com.google.code.gson:gson:2.2.4'
     compile project(':sharecode')
     compile 'com.android.support:recyclerview-v7:25.1.0'
